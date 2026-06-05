@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHECKMANT - Tecfag Multimáquinas</title>
+    <style>
+        /* Estilização Geral Base (Estilo Dark Industrial) */
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 90vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Cabeçalho dos Painéis Internos */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .titulos h1 { margin: 0 0 5px 0; font-size: 26px; font-weight: 800; }
+        .titulos p { margin: 0; color: #94a3b8; font-size: 14px; }
+        
+        /* TELA DE LOGIN FORMATADA */
+        #bloco-login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+        .card-login {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 16px;
+            padding: 35px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        .card-login h2 { color: #34d399; margin: 0 0 5px 0; font-size: 32px; font-weight: 900; text-align: center; letter-spacing: 1px; }
+        .card-login p { color: #94a3b8; font-size: 13px; margin-bottom: 25px; text-align: center; }
+        
+        /* LAYOUT DE NAVEGAÇÃO POR ABAS/LISTAS */
+        .layout-abas {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .layout-abas {
+                flex-direction: row;
+            }
+        }
+
+        /* Menu de Navegação em Lista */
+        .menu-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 250px;
+        }
+        .menu-item {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            padding: 14px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            color: #cbd5e1;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .menu-item:hover {
+            background-color: #334155;
+            color: #fff;
+            transform: translateX(4px);
+        }
+        .menu-item.ativo {
+            background-color: #2563eb;
+            border-color: #3b82f6;
+            color: white;
+        }
+        .menu-item.ativo .setinha {
+            transform: rotate(90deg);
+        }
+        .setinha {
+            transition: transform 0.2s;
+        }
+
+        /* Área do Conteúdo Selecionado */
+        .conteudo-aba {
+            flex: 1;
+        }
+        
+        /* Blocos/Painéis Internos */
+        .bloco {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        .bloco h2 {
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #475569;
+            font-size: 20px;
+        }
+
+        /* BARRA DE ROLAGEM OTIMIZADA E FORÇADA */
+        .area-rolavel-checklist {
+            max-height: 52vh;
+            overflow-y: scroll !important;
+            padding-right: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        /* Estilização da barra de rolagem */
+        .area-rolavel-checklist::-webkit-scrollbar, .bloco::-webkit-scrollbar {
+            width: 10px;
+        }
+        .area-rolavel-checklist::-webkit-scrollbar-thumb, .bloco::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 6px;
+            border: 2px solid #0f172a;
+        }
+        .area-rolavel-checklist::-webkit-scrollbar-thumb:hover {
+            background-color: #64748b;
+        }
+        .area-rolavel-checklist::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 6px;
+        }
+        
+        /* Cores de Títulos específicos */
+        .titulo-checklist { color: #34d399; }
+        .titulo-os { color: #f59e0b; }
+        .titulo-status { color: #60a5fa; }
+        .titulo-manutencao { color: #a855f7; }
+        
+        /* Seções internas do Checklist */
+        .header-secao-checklist {
+            background-color: #1e293b;
+            color: #38bdf8;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 6px 10px;
+            margin: 15px 0 6px 0;
+            border-left: 3px solid #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .header-secao-checklist:first-child { margin-top: 0; }
+
+        /* Elementos de Formulários */
+        .pergunta-card {
+            background-color: #1e293b;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            border: 1px solid #334155;
+            gap: 15px;
+        }
+        .critico { background-color: #451a03; border: 1px solid #854d0e; color: #fef08a; }
+        .pergunta-texto { flex: 1; }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 9px;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #f8fafc;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+        
+        .opcoes-radio { display: flex; gap: 8px; flex-shrink: 0; }
+        .opcoes-radio label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #0f172a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+        }
+        
+        /* CORREÇÃO DO CSS DOS BOTÕES */
+        button {
+            width: 100%;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: block;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        
+        /* Nova classe limpa e isolada para links em formato de botão */
+        .btn-link-formatado {
+            width: 100%;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 14px;
+            display: block;
+            box-sizing: border-box;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .btn-azul { background-color: #2563eb; color: white; }
+        .btn-roxo { background-color: #7c3aed; color: white; }
+        .btn-verde { background-color: #059669; color: white; }
+        .btn-laranja { background-color: #d97706; color: white; }
+        .btn-cinza { background-color: #475569; color: white; }
+        
+        /* Ocultor de telas */
+        .escondido { display: none !important; }
+
+        /* ESTRUTURA DO KANBAN DINÂMICO */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        @media (min-width: 768px) {
+            .kanban-board { grid-template-columns: 1fr 1fr 1fr; }
+        }
+        .kanban-coluna {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 250px;
+        }
+        .kanban-coluna-titulo {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .count-badge {
+            background-color: #334155;
+            color: #f8fafc;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        
+        /* Card de Tarefa Kanban */
+        .kanban-card {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+        .kanban-card-alta {
+            border-left: 4px solid #ef4444 !important;
+            background: linear-gradient(90deg, #2c1a1a 0%, #1e293b 100%);
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { border-color: #ef4444; }
+            50% { border-color: #7f1d1d; }
+            100% { border-color: #ef4444; }
+        }
+        .kanban-card h4 { margin: 0 0 6px 0; font-size: 13px; color: #f8fafc; display: flex; justify-content: space-between; }
+        .kanban-card p { margin: 0 0 10px 0; font-size: 12px; color: #cbd5e1; white-space: pre-line; }
+        .kanban-meta { font-size: 10px; color: #94a3b8; margin-bottom: 8px; display: block; }
+        
+        .kanban-acoes {
+            display: flex;
+            gap: 5px;
+            border-top: 1px solid #334155;
+            padding-top: 8px;
+            margin-top: 5px;
+        }
+        .btn-kanban-acao {
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 0;
+            width: auto;
+            flex: 1;
+        }
+
+        /* Badges de conformidade adicionais */
+        .badge-ok { background-color: #065f46; color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
+        .badge-nok { background-color: #7f1d1d; color: #f87171; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
+        .table-container { overflow-x: auto; margin-top: 15px; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #475569; }
+        th { color: #94a3b8; background-color: #0f172a; }
+        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="bloco-login">
+        <div class="card-login">
+            <h2>CHECKMANT</h2>
+            <p>Insira suas credenciais operacionais</p>
+            
+            <form id="form-login" onkeydown="if(event.key === 'Enter'){ autenticarUsuario(); }">
+                <div class="form-group">
+                    <label>ID do Usuário / Login:</label>
+                    <input type="text" id="login-usuario" placeholder="Ex: op_1 ou eng_1" required autocomplete="off">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Senha Numérica:</label>
+                    <input type="password" id="login-senha" placeholder="••••" required>
+                </div>
+                
+                <button type="button" onclick="autenticarUsuario()" class="btn-azul">Entrar no Sistema</button>
+            </form>
+            
+            <div style="border-top: 1px solid #475569; margin-top: 15px; padding-top: 15px; text-align: center;">
+                <span style="font-size: 11px; color: #94a3b8; display: block;">Operadores: senha 0000 | Engenharia: senha 1234</span>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="bloco-operador" class="container escondido">
+        <header>
+            <div class="titulos">
+                <h1 class="titulo-checklist">CHECKMANT - Operador (<span id="user-display">op_1</span>)</h1>
+                <p>Navegue pelas rotinas de manutenção abaixo:</p>
+            </div>
+            <div style="width: auto;">
+                <button onclick="fazerLogout()" class="btn-cinza" style="padding: 8px 15px; margin: 0; width: auto;">Sair / Logout</button>
+            </div>
+        </header>
+
+        <div class="layout-abas">
+            <ul class="menu-lista">
+                <li class="menu-item ativo" id="item-op-chk" onclick="alternarAbaOperador('op-chk')">
+                    <span>📋 Checklist Diário</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-op-os" onclick="alternarAbaOperador('op-os')">
+                    <span>🛠️ Abrir O.S. de Defeito</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-op-hist" onclick="alternarAbaOperador('op-hist')">
+                    <span>🕒 Histórico de Ordens</span> <span class="setinha">➔</span>
+                </li>
+            </ul>
+
+            <div class="conteudo-aba">
+                <div id="aba-op-chk" class="bloco">
+                    <h2 class="titulo-checklist">📋 Checklist Operacional Diário</h2>
+                    
+                    <div class="form-group" style="margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 8px;">
+                        <label style="color: #34d399;">MÁQUINA DIRECIONADA:</label>
+                        <select id="operador-seletor-equipamento" onchange="montarChecklistNaTelaDoOperador()" style="border-color: #34d399; font-weight: bold; color: #34d399;">
+                        </select>
+                    </div>
+
+                    <form id="form-checklist" onsubmit="validarChecklist(event)">
+                        <div class="area-rolavel-checklist" id="container-perguntas-checklist"></div>
+                        <button type="submit" class="btn-verde">Enviar Checklist do Equipamento</button>
+                    </form>
+                </div>
+
+                <div id="aba-op-os" class="bloco escondido">
+                    <h2 class="titulo-os">🛠️ Abrir O.S. de Manutenção</h2>
+                    <form id="form-os" onsubmit="criarNovaOS(event)">
+                        <div class="form-group">
+                            <label>EQUIPAMENTO COM DEFEITO:</label>
+                            <select id="os-equipamento" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>TURNO:</label>
+                            <select id="os-turno" required>
+                                <option value="1º Turno">1º Turno</option>
+                                <option value="2º Turno">2º Turno</option>
+                                <option value="3º Turno">3º Turno</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ÁREA / SETOR:</label>
+                            <input type="text" id="os-area" placeholder="Ex: Setor de Triagem" required>
+                        </div>
+                        <div class="form-group">
+                            <label>RESPONSÁVEL OPERACIONAL:</label>
+                            <input type="text" id="os-usuario" readonly style="background:#0f172a; color:#94a3b8; font-weight:bold;">
+                        </div>
+                        <div class="form-group">
+                            <label>DESCRIÇÃO DA FALHA / AVARIA:</label>
+                            <textarea id="os-descricao" rows="3" placeholder="Descreva o problema identificado..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>CRITICIDADE:</label>
+                            <div class="opcoes-radio" style="background:#0f172a; padding:8px; border-radius:6px; border:1px solid #475569;">
+                                <label style="color:#f87171;"><input type="radio" name="os-criticidade" value="ALTA" id="radio-critica-alta" required> ALTA</label>
+                                <label style="color:#fbbf24;"><input type="radio" name="os-criticidade" value="MÉDIA"> MÉDIA</label>
+                                <label style="color:#60a5fa;"><input type="radio" name="os-criticidade" value="BAIXA"> BAIXA</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-laranja">Emitir Ordem de Serviço</button>
+                    </form>
+                </div>
+
+                <div id="aba-op-hist" class="bloco escondido" style="background-color: #1e293b;">
+                    <h2 class="titulo-status">🕒 Histórico de O.S. Abertas</h2>
+                    <div id="lista-os-operador"></div>
+
+                    <div style="margin-top: 25px; border-top: 1px solid #475569; padding-top: 15px;">
+                        <h3 style="font-size:14px; color:#60a5fa; margin:0 0 5px 0;">Contato de Suporte</h3>
+                        <div class="manual-box" style="background-color: #0f172a; padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6; font-size: 12px; color: #cbd5e1; margin-top: 15px; margin-bottom: 12px;">
+                            <strong>Telefone Tecfag:</strong> (14) 3161-5000<br>
+                            <strong>WhatsApp Técnico:</strong> (14) 99105-4116<br>
+                        </div>
+                        
+                        <a href="https://grupo.tecfag.com.br/wp-content/uploads/2020/03/manual-tecfag-esteira-com-ajuste-de-90o-rc1mv90.pdf" target="_blank" class="btn-link-formatado btn-cinza" style="font-size:12px;">
+                            📖 Abrir Manual Técnico do Equipamento (PDF)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="bloco-manutencao" class="container escondido">
+        <header>
+            <div class="titulos">
+                <h1 class="titulo-manutencao">CHECKMANT - Engenharia</h1>
+                <p>Controle global de ativos e auditorias corporativas (<span id="eng-display">eng_1</span>)</p>
+            </div>
+            <div style="width: auto;">
+                <button onclick="fazerLogout()" class="btn-cinza" style="padding: 8px 15px; margin: 0; width: auto;">Sair / Voltar</button>
+            </div>
+        </header>
+
+        <div class="layout-abas">
+            <ul class="menu-lista">
+                <li class="menu-item ativo" id="item-eng-kanban" onclick="alternarAbaManutencao('eng-kanban')">
+                    <span>📋 Quadro Kanban (Backlog)</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-eng-config" onclick="alternarAbaManutencao('eng-config')">
+                    <span>⚙️ Configurar Itens/Ativos</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-eng-audit" onclick="alternarAbaManutencao('eng-audit')">
+                    <span>📊 Histórico & Auditoria</span> <span class="setinha">➔</span>
+                </li>
+            </ul>
+
+            <div class="conteudo-aba">
+                <div id="aba-eng-kanban" class="bloco" style="border-color: #f59e0b;">
+                    <h2 class="titulo-os">📋 Quadro Kanban de Atividades</h2>
+                    <p style="color:#94a3b8; font-size:13px; margin-bottom:5px;">Acompanhe o andamento das Ordens de Serviço abertas em tempo real.</p>
+                    
+                    <div class="kanban-board">
+                        <div class="kanban-coluna">
+                            <div class="kanban-coluna-titulo" style="color: #f87171;">
+                                <span>⏳ PENDENTES</span>
+                                <span class="count-badge" id="count-pendente">0</span>
+                            </div>
+                            <div id="coluna-kanban-pendente"></div>
+                        </div>
+
+                        <div class="kanban-coluna">
+                            <div class="kanban-coluna-titulo" style="color: #fbbf24;">
+                                <span>⚙️ EM ANDAMENTO</span>
+                                <span class="count-badge" id="count-andamento">0</span>
+                            </div>
+                            <div id="coluna-kanban-andamento"></div>
+                        </div>
+
+                        <div class="kanban-coluna">
+                            <div class="kanban-coluna-titulo" style="color: #34d399;">
+                                <span>✅ CONCLUÍDOS</span>
+                                <span class="count-badge" id="count-concluido">0</span>
+                            </div>
+                            <div id="coluna-kanban-concluido"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aba-eng-config" class="bloco escondido" style="border-color: #a855f7;">
+                    <h2 class="titulo-manutencao">⚙️ Criar Novas Perguntas por Equipamento</h2>
+                    
+                    <form id="form-criar-checklist" onsubmit="adicionarNovaPerguntaChecklist(event)">
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 12px;">
+                            <div class="form-group">
+                                <label>Vincular ao Equipamento:</label>
+                                <select id="chk-novo-equipamento" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Grupo/Seção da Planilha:</label>
+                                <select id="chk-nova-secao" required>
+                                    <option value="SEGURANÇA (NR-12)">SEGURANÇA (NR-12)</option>
+                                    <option value="ESTRUTURA E ALINHAMENTO">ESTRUTURA E ALINHAMENTO</option>
+                                    <option value="CORREIA (LONA)">CORREIA (LONA)</option>
+                                    <option value="ACIONAMENTO (MOTORREDUTOR)">ACIONAMENTO (MOTORREDUTOR)</option>
+                                    <option value="SISTEMA ELÉTRICO/CONTROLE">SISTEMA ELÉTRICO/CONTROLE</option>
+                                    <option value="LUBRIFICAÇÃO (AÇÃO)">LUBRIFICAÇÃO (AÇÃO)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Descrição da Inspeção/Ação:</label>
+                                <input type="text" id="chk-nova-pergunta" placeholder="Ex: Verificar tensionamento da lona" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Item Crítico (Obrigatório)?</label>
+                                <select id="chk-novo-critico">
+                                    <option value="SIM">Sim, trava máquina (*)</option>
+                                    <option value="NAO">Não, apenas aviso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-roxo" style="width: auto; display: inline-block; padding: 10px 25px;">Inserir Item de Verificação</button>
+                    </form>
+                    
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #475569;">
+                        <h3 style="font-size: 14px; color: #a855f7; margin-bottom: 8px;">➕ Adicionar Novo Equipamento na Planta:</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="text" id="add-novo-nome-maquina" placeholder="Ex: Esteira Transportadora Tecfag Linha 02">
+                            <button onclick="cadastrarNovaMaquinaSetor()" class="btn-azul" style="width: auto; align-self: flex-start; padding: 9px 20px;">Cadastrar Equipamento</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aba-eng-audit" class="bloco escondido" style="border-color: #34d399;">
+                    <h2 class="titulo-checklist">📊 Histórico de Auditoria Consolidado (Respostas do Chão de Fábrica)</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Operador</th>
+                                    <th>Equipamento Avaliado</th>
+                                    <th>Item Inspecionado</th>
+                                    <th style="text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-historico-checklists"></tbody>
+                        </table>
+                    </div>
+                    <button onclick="limparTodoHistorico()" class="btn-cinza" style="background-color:#7f1d1d; color:#fca5a5; margin-top:10px; width:auto; font-size:12px; padding:6px 12px;">Deletar/Zerar Todos os Dados da Memória</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Cadastro de Acessos Fixos
+        const usuariosValidos = {
+            "op_1": { senha: "0000", role: "operador" },
+            "op_2": { senha: "0000", role: "operador" },
+            "eng_1": { senha: "1234", role: "manutencao" }
+        };
+
+        const maquinasIniciais = ["Esteira Transportadora Tecfag RC1M/V90"];
+
+        // BANCO DE DADOS DA SUA PLANILHA
+        const perguntasPlanilhaOficial = [
+            { id: "pf1", secao: "SEGURANÇA (NR-12)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Proteções e barreiras de segurança (guarda-corpo, telas) estão no lugar e em bom estado?", critico: false },
+            { id: "pf2", secao: "SEGURANÇA (NR-12)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Botões de emergência e dispositivos de parada estão acessíveis e funcionando?", critico: true },
+            { id: "pf3", secao: "SEGURANÇA (NR-12)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Sinalização de segurança e advertência (riscos, EPIs) está visível e legível?", critico: false },
+            { id: "pf4", secao: "ESTRUTURA E ALINHAMENTO", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Estrutura metálica (chassis) apresenta trincas, corrosão ou deformações?", critico: false },
+            { id: "pf5", secao: "ESTRUTURA E ALINHAMENTO", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Roletes/Roletes de carga e retorno giram livremente e não estão danificados?", critico: false },
+            { id: "pf6", secao: "ESTRUTURA E ALINHAMENTO", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Estado e alinhamento do tambor de acionamento (cabeceira) e do tambor de retorno (cauda)?", critico: false },
+            { id: "pf7", secao: "ESTRUTURA E ALINHAMENTO", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Limpeza geral da estrutura (acúmulo de material)?", critico: false },
+            { id: "pf8", secao: "CORREIA (LONA)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Correia apresenta cortes, rasgos, furos ou desgaste excessivo?", critico: true },
+            { id: "pf9", secao: "CORREIA (LONA)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Emendas da correia (se houver) estão íntegras e planas?", critico: true },
+            { id: "pf10", secao: "CORREIA (LONA)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Correia está centralizada e não roça na estrutura? (Tensionamento/Alinhamento)", critico: false },
+            { id: "pf11", secao: "CORREIA (LONA)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Limpadores de correia (raspadores) estão ajustados e eficientes?", critico: false },
+            { id: "pf12", secao: "ACIONAMENTO (MOTORREDUTOR)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Nível e condition do óleo/lubrificante no redutor (se aplicável)?", critico: false },
+            { id: "pf13", secao: "ACIONAMENTO (MOTORREDUTOR)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Ausência de ruídos ou vibrações anormais no motor/redutor?", critico: true },
+            { id: "pf14", secao: "ACIONAMENTO (MOTORREDUTOR)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Estado e tensionamento das correias de transmissão (se houver)?", critico: true },
+            { id: "pf15", secao: "ACIONAMENTO (MOTORREDUTOR)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Temperaturas de operação do motor e redutor (medir se possível)?", critico: false },
+            { id: "pf16", secao: "SISTEMA ELÉTRICO/CONTROLE", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Cabos e caixas de ligação estão íntegros (sem fios expostos ou danos)?", critico: false },
+            { id: "pf17", secao: "SISTEMA ELÉTRICO/CONTROLE", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Teste de funcionamento dos sensores de desalinhamento (se houver)?", critico: false },
+            { id: "pf18", secao: "SISTEMA ELÉTRICO/CONTROLE", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Teste de funcionamento do sensor de rotação/velocidade (se houver)?", critico: false },
+            { id: "pf19", secao: "LUBRIFICAÇÃO (AÇÃO)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Pontos de lubrificação dos mancais e rolamentos realizados (verificar lubrificante correto)?", resultadoTipo: "SIM_NAO", critico: false },
+            { id: "pf20", secao: "LUBRIFICAÇÃO (AÇÃO)", equipamento: "Esteira Transportadora Tecfag RC1M/V90", texto: "Pontos de lubrificação do sistema de tensionamento (parafusos/estiramento) realizados?", resultadoTipo: "SIM_NAO", critico: false }
+        ];
+
+        let bancoMaquinas = JSON.parse(localStorage.getItem('maquinas_tecfag')) || maquinasIniciais;
+        let bancoPerguntas = JSON.parse(localStorage.getItem('perguntas_checklist_tecfag')) || perguntasPlanilhaOficial;
+        let bancoOS = JSON.parse(localStorage.getItem('historico_os_tecfag')) || [];
+        let bancoChecklists = JSON.parse(localStorage.getItem('historico_checklists_tecfag')) || [];
+
+        let usuarioLogado = "";
+        let perfilUsuarioLogado = "";
+
+        // NAVEGAÇÃO ENTRE ABAS - OPERADOR
+        function alternarAbaOperador(alvo) {
+            document.getElementById('aba-op-chk').classList.add('escondido');
+            document.getElementById('aba-op-os').classList.add('escondido');
+            document.getElementById('aba-op-hist').classList.add('escondido');
+            
+            document.getElementById('item-op-chk').classList.remove('ativo');
+            document.getElementById('item-op-os').classList.remove('ativo');
+            document.getElementById('item-op-hist').classList.remove('ativo');
+
+            document.getElementById(`aba-${alvo}`).classList.remove('escondido');
+            document.getElementById(`item-${alvo}`).classList.add('ativo');
+
+            if(alvo === 'op-hist') { renderizarStatusOperador(); }
+        }
+
+        // NAVEGAÇÃO ENTRE ABAS - MANUTENÇÃO
+        function alternarAbaManutencao(alvo) {
+            document.getElementById('aba-eng-kanban').classList.add('escondido');
+            document.getElementById('aba-eng-config').classList.add('escondido');
+            document.getElementById('aba-eng-audit').classList.add('escondido');
+            
+            document.getElementById('item-eng-kanban').classList.remove('ativo');
+            document.getElementById('item-eng-config').classList.remove('ativo');
+            document.getElementById('item-eng-audit').classList.remove('ativo');
+
+            document.getElementById(`aba-${alvo}`).classList.remove('escondido');
+            document.getElementById(`item-${alvo}`).classList.add('ativo');
+
+            if(alvo === 'eng-kanban' || alvo === 'eng-audit') { atualizarPainelManutencaoCompleto(); }
+        }
+
+        // FUNÇÃO DE LOGIN BLINDADA
+        function autenticarUsuario() {
+            try {
+                const usuarioInput = document.getElementById('login-usuario').value.trim().toLowerCase();
+                const senhaInput = document.getElementById('login-senha').value.trim();
+                
+                if(!usuarioInput || !senhaInput) {
+                    alert("Por favor, preencha o usuário e a senha.");
+                    return;
+                }
+
+                const contaEncontrada = usuariosValidos[usuarioInput];
+
+                if (contaEncontrada && contaEncontrada.senha === senhaInput) {
+                    usuarioLogado = usuarioInput;
+                    perfilUsuarioLogado = contaEncontrada.role;
+                    
+                    if (perfilUsuarioLogado === 'operador') {
+                        document.getElementById('user-display').innerText = usuarioLogado;
+                        document.getElementById('os-usuario').value = usuarioLogado;
+                        irPara('operador');
+                        alternarAbaOperador('op-chk');
+                    } else if (perfilUsuarioLogado === 'manutencao') {
+                        document.getElementById('eng-display').innerText = usuarioLogado;
+                        irPara('manutencao');
+                        alternarAbaManutencao('eng-kanban');
+                    }
+                } else {
+                    alert("Acesso negado! Redigite as credenciais.");
+                }
+            } catch (erro) {
+                alert("Erro interno na validação: " + erro.message);
+            }
+        }
+
+        function fazerLogout() {
+            usuarioLogado = ""; perfilUsuarioLogado = "";
+            document.getElementById('form-login').reset();
+            irPara('login');
+        }
+
+        function irPara(tela) {
+            document.getElementById('bloco-login').classList.add('escondido');
+            document.getElementById('bloco-operador').classList.add('escondido');
+            document.getElementById('bloco-manutencao').classList.add('escondido');
+            
+            if (tela === 'login') {
+                document.getElementById('bloco-login').classList.remove('escondido');
+                setTimeout(() => document.getElementById('login-usuario').focus(), 100);
+            } else if (tela === 'operador') {
+                document.getElementById('bloco-operador').classList.remove('escondido');
+                sincronizarListasMaquinasNaTela();
+                montarChecklistNaTelaDoOperador();
+                renderizarStatusOperador();
+            } else if (tela === 'manutencao') {
+                document.getElementById('bloco-manutencao').classList.remove('escondido');
+                sincronizarListasMaquinasNaTela();
+                atualizarPainelManutencaoCompleto();
+            }
+        }
+
+        function sincronizarListasMaquinasNaTela() {
+            document.getElementById('operador-seletor-equipamento').innerHTML = bancoMaquinas.map(m => `<option value="${m}">${m}</option>`).join('');
+            document.getElementById('os-equipamento').innerHTML = bancoMaquinas.map(m => `<option value="${m}">${m}</option>`).join('');
+            document.getElementById('chk-novo-equipamento').innerHTML = bancoMaquinas.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+
+        function atualizarPainelManutencaoCompleto() {
+            bancoOS = JSON.parse(localStorage.getItem('historico_os_tecfag')) || [];
+            bancoChecklists = JSON.parse(localStorage.getItem('historico_checklists_tecfag')) || [];
+            renderizarKanbanManutencao();
+            renderizarTabelaChecklistsLog();
+        }
+
+        function cadastrarNovaMaquinaSetor() {
+            const nomeMaquina = document.getElementById('add-novo-nome-maquina').value.trim();
+            if(!nomeMaquina) return alert("Preencha o nome do Ativo!");
+
+            bancoMaquinas.push(nomeMaquina);
+            localStorage.setItem('maquinas_tecfag', JSON.stringify(bancoMaquinas));
+            document.getElementById('add-novo-nome-maquina').value = "";
+            alert("Sucesso: Equipamento mapeado na planta!");
+            sincronizarListasMaquinasNaTela();
+        }
+
+        function adicionarNovaPerguntaChecklist(event) {
+            event.preventDefault();
+            const maquinaSelecionada = document.getElementById('chk-novo-equipamento').value;
+            const secaoSelecionada = document.getElementById('chk-nova-secao').value;
+            const textoItem = document.getElementById('chk-nova-pergunta').value.trim();
+            const ehCritico = document.getElementById('chk-novo-critico').value === "SIM";
+
+            bancoPerguntas.push({
+                id: "p_" + Date.now(),
+                secao: secaoSelecionada,
+                equipamento: maquinaSelecionada,
+                texto: textoItem,
+                critico: ehCritico,
+                resultadoTipo: secaoSelecionada.includes("LUBRIFICAÇÃO") ? "SIM_NAO" : "OK_NOK"
+            });
+            
+            localStorage.setItem('perguntas_checklist_tecfag', JSON.stringify(bancoPerguntas));
+            document.getElementById('chk-nova-pergunta').value = "";
+            alert("Novo critério indexado com sucesso!");
+            montarChecklistNaTelaDoOperador();
+        }
+
+        function montarChecklistNaTelaDoOperador() {
+            const maquinaAtual = document.getElementById('operador-seletor-equipamento').value;
+            const container = document.getElementById('container-perguntas-checklist');
+            const perguntasFiltradas = bancoPerguntas.filter(p => p.equipamento === maquinaAtual);
+
+            if(perguntasFiltradas.length === 0) {
+                container.innerHTML = `<p style="color:#64748b; font-style:italic; text-align:center; padding:20px;">Nenhum plano de manutenção preventiva cadastrado.</p>`;
+                return;
+            }
+
+            let secoesMapeadas = {};
+            perguntasFiltradas.forEach(p => {
+                if(!secoesMapeadas[p.secao]) secoesMapeadas[p.secao] = [];
+                secoesMapeadas[p.secao].push(p);
+            });
+
+            let htmlFinal = "";
+            for (let secao in secoesMapeadas) {
+                htmlFinal += `<div class="header-secao-checklist">${secao}</div>`;
+                
+                secoesMapeadas[secao].forEach(pergunta => {
+                    let classeCritico = pergunta.critico ? 'critico' : '';
+                    let labelObrigatorio = pergunta.critico ? ' [TRAVA MÁQUINA SE N/OK *]' : '';
+                    
+                    let opt1 = pergunta.resultadoTipo === "SIM_NAO" ? "SIM" : "OK";
+                    let opt2 = pergunta.resultadoTipo === "SIM_NAO" ? "NÃO" : "N/OK";
+                    let valorRealOpt2 = pergunta.resultadoTipo === "SIM_NAO" ? "NAO" : "NOK";
+
+                    htmlFinal += `
+                        <div class="pergunta-card ${classeCritico}">
+                            <span class="pergunta-texto"><strong>${pergunta.texto}</strong><span style="font-size:10px; display:block; opacity:0.8;">${labelObrigatorio}</span></span>
+                            <div class="opcoes-radio">
+                                <label><input type="radio" name="${pergunta.id}" value="${opt1}" required> ${opt1}</label>
+                                <label><input type="radio" name="${pergunta.id}" value="${valorRealOpt2}"> ${opt2}</label>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = htmlFinal;
+        }
+
+        function validarChecklist(event) {
+            event.preventDefault();
+            const maquinaAtual = document.getElementById('operador-seletor-equipamento').value;
+            const perguntasFiltradas = bancoPerguntas.filter(p => p.equipamento === maquinaAtual);
+
+            let houveFalhaCritica = false;
+            let falhasDetalhadas = "";
+
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+            perguntasFiltradas.forEach(p => {
+                const elementoMarcado = document.querySelector(`input[name="${p.id}"]:checked`);
+                if(!elementoMarcado) return;
+                
+                const resposta = elementoMarcado.value;
+                
+                if (p.critico && (resposta === 'NOK' || resposta === 'NAO')) {
+                    houveFalhaCritica = true;
+                    falhasDetalhadas += `• ${p.texto}\n`;
+                }
+
+                bancoChecklists.unshift({
+                    data: dataFormatada,
+                    usuario: usuarioLogado,
+                    equipamento: maquinaAtual,
+                    pergunta: `(${p.secao}) ${p.texto}`,
+                    resultado: resposta
+                });
+            });
+
+            localStorage.setItem('historico_checklists_tecfag', JSON.stringify(bancoChecklists));
+
+            if (houveFalhaCritica) {
+                alert(
+                    "❌ ALERTA CRÍTICO DE SEGURANÇA E CONFORMIDADE!\n\n" +
+                    "ATENÇÃO OPERADOR: NÃO LIGUE A MÁQUINA SOB NENHUMA HIPÓTESE!\n" +
+                    "Os seguintes itens obrigatórios estão inconformes:\n" +
+                    falhasDetalhadas + "\n" +
+                    "A Manutenção foi acionada e uma O.S. de Urgência foi aberta automaticamente!"
+                );
+                
+                bancoOS = JSON.parse(localStorage.getItem('historico_os_tecfag')) || [];
+                const proximoId = bancoOS.length > 0 ? Math.max(...bancoOS.map(o => o.id)) + 1 : 101;
+                
+                bancoOS.unshift({
+                    id: proximoId,
+                    equipamento: maquinaAtual,
+                    turno: "Turno Atual",
+                    area: "Planta de Produção",
+                    usuario: usuarioLogado,
+                    descricao: `BLOQUEIO PREVENTIVO VIA CHECKLIST DIÁRIO.\nItens violados:\n${falhasDetalhadas}`,
+                    criticidade: "ALTA",
+                    status: "Pendente"
+                });
+                localStorage.setItem('historico_os_tecfag', JSON.stringify(bancoOS));
+                
+                document.getElementById('form-checklist').reset();
+                montarChecklistNaTelaDoOperador();
+                alternarAbaOperador('op-hist');
+            } else {
+                alert("✅ Perfeito! Checklist Preventivo validado e salvo para auditoria.");
+                document.getElementById('form-checklist').reset();
+                montarChecklistNaTelaDoOperador();
+            }
+        }
+
+        function criarNovaOS(event) {
+            event.preventDefault();
+            bancoOS = JSON.parse(localStorage.getItem('historico_os_tecfag')) || [];
+            const proximoId = bancoOS.length > 0 ? Math.max(...bancoOS.map(o => o.id)) + 1 : 101;
+
+            const novaOS = {
+                id: proximoId,
+                equipamento: document.getElementById('os-equipamento').value,
+                turno: document.getElementById('os-turno').value,
+                area: document.getElementById('os-area').value,
+                usuario: usuarioLogado,
+                descricao: document.getElementById('os-descricao').value,
+                criticidade: document.querySelector('input[name="os-criticidade"]:checked').value,
+                status: "Pendente"
+            };
+
+            bancoOS.unshift(novaOS);
+            localStorage.setItem('historico_os_tecfag', JSON.stringify(bancoOS));
+
+            document.getElementById('form-os').reset();
+            document.getElementById('os-usuario').value = usuarioLogado;
+            
+            alert(`Ordem de Serviço #${proximoId} gerada com sucesso!`);
+            alternarAbaOperador('op-hist');
+        }
+
+        function renderizarStatusOperador() {
+            bancoOS = JSON.parse(localStorage.getItem('historico_os_tecfag')) || [];
+            const container = document.getElementById('lista-os-operador');
+            if (bancoOS.length === 0) {
+                container.innerHTML = `<p style="color:#64748b; text-align:center; padding:15px;">Nenhuma O.S. aberta para este turno.</p>`;
+                return;
+            }
+            container.innerHTML = bancoOS.map(os => {
+                let badgeCor = os.status === 'Pendente' ? '#f87171' : os.status === 'Em Andamento' ? '#fbbf24' : '#34d399';
+                return `
+                    <div class="os-status-item">
+                        <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                            <span>#${os.id} - ${os.equipamento}</span>
+                            <span style="color:${badgeCor}; font-size:11px;">● ${os.status}</span>
+                        </div>
+                        <p style="color:#cbd5e1; margin:4px 0; font-size:11.5px;">${os.descricao}</p>
+                        <span style="color:#64748b; font-size:10px;">Grau: ${os.criticidade} | Setor: ${os.area}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderizarKanbanManutencao() {
+            const colPendente = document.getElementById('coluna-kanban-pendente');
+            const colAndamento = document.getElementById('coluna-kanban-andamento');
+            const colConcluido = document.getElementById('coluna-kanban-concluido');
+
+            let pados = bancoOS.filter(o => o.status === 'Pendente');
+            let andados = bancoOS.filter(o => o.status === 'Em Andamento');
+            let condados = bancoOS.filter(o => o.status === 'Concluído');
+
+            document.getElementById('count-pendente').innerText = pados.length;
+            document.getElementById('count-andamento').innerText = andados.length;
+            document.getElementById('count-concluido').innerText = condados.length;
+
+            const gerarCardHTML = (os) => {
+                let classeAlta = os.criticidade === 'ALTA' ? 'kanban-card-alta' : '';
+                let labelCritica = os.criticidade === 'ALTA' ? '🚨 URGENCIAL' : os.criticidade === 'MÉDIA' ? '⚠️ MÉDIA' : '📉 BAIXA';
+                
+                let btoAcoes = '';
+                if(os.status === 'Pendente') {
+                    btoAcoes = `<button onclick="alterarStatusKanban(${os.id}, 'Em Andamento')" class="btn-kanban-acao btn-laranja">🚀 Iniciar</button>`;
+                } else if(os.status === 'Em Andamento') {
+                    btoAcoes = `<button onclick="alterarStatusKanban(${os.id}, 'Concluído')" class="btn-kanban-acao btn-verde">🏁 Finalizar</button>`;
+                } else if(os.status === 'Concluído') {
+                    btoAcoes = `<button onclick="deletarOSKanban(${os.id})" class="btn-kanban-acao btn-cinza" style="background:#7f1d1d;">📦 Arquivar</button>`;
+                }
+
+                return `
+                    <div class="kanban-card ${classeAlta}">
+                        <h4>
+                            <span>#${os.id}</span>
+                            <span style="font-size:10px; opacity:0.9;">${labelCritica}</span>
+                        </h4>
+                        <span class="kanban-meta">🎰 Ativo: <strong>${os.equipamento}</strong></span>
+                        <p>${os.descricao}</p>
+                        <span class="kanban-meta" style="margin:0;">Resp: ${os.usuario} | Setor: ${os.area}</span>
+                        <div class="kanban-acoes">${btoAcoes}</div>
+                    </div>
+                `;
+            };
+
+            colPendente.innerHTML = pados.length ? pados.map(gerarCardHTML).join('') : '<p style="color:#475569; font-size:11px; font-style:italic; text-align:center; padding:10px;">Sem pendências.</p>';
+            colAndamento.innerHTML = andados.length ? andados.map(gerarCardHTML).join('') : '<p style="color:#475569; font-size:11px; font-style:italic; text-align:center; padding:10px;">Nenhum em execução.</p>';
+            colConcluido.innerHTML = condados.length ? condados.map(gerarCardHTML).join('') : '<p style="color:#475569; font-size:11px; font-style:italic; text-align:center; padding:10px;">Nenhum concluído.</p>';
+        }
+
+        function alterarStatusKanban(id, novoStatus) {
+            const item = bancoOS.find(o => o.id === id);
+            if(item) {
+                item.status = novoStatus;
+                localStorage.setItem('historico_os_tecfag', JSON.stringify(bancoOS));
+                renderizarKanbanManutencao();
+            }
+        }
+
+        function deletarOSKanban(id) {
+            if(confirm(`Deseja arquivar a O.S. #${id}?`)) {
+                bancoOS = bancoOS.filter(o => o.id !== id);
+                localStorage.setItem('historico_os_tecfag', JSON.stringify(bancoOS));
+                renderizarKanbanManutencao();
+            }
+        }
+
+        function renderizarTabelaChecklistsLog() {
+            const tbody = document.getElementById('tabela-historico-checklists');
+            if (bancoChecklists.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:15px;">Aguardando respostas.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = bancoChecklists.map(log => {
+                let ehOk = log.resultado === 'OK' || log.resultado === 'SIM';
+                let badge = ehOk ? 'badge-ok' : 'badge-nok';
+                return `
+                    <tr>
+                        <td style="color:#94a3b8; font-size:12px;">${log.data}</td>
+                        <td><strong>${log.usuario}</strong></td>
+                        <td style="color:#a855f7; font-weight:500;">${log.equipamento}</td>
+                        <td style="color:#cbd5e1; font-size:12px;">${log.pergunta}</td>
+                        <td style="text-align:center;"><span class="${badge}">${log.resultado}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function limparTodoHistorico() {
+            if(confirm("Deseja resetar as tabelas de auditoria?")) {
+                localStorage.removeItem('historico_checklists_tecfag');
+                location.reload();
+            }
+        }
+        
+        // Foco inicial automático
+        window.onload = function() {
+            document.getElementById('login-usuario').focus();
+        };
+    </script>
+</body>
+</html>
