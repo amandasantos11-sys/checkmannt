@@ -165,30 +165,29 @@
         // CHECKLIST COMPLETO DA ESTEIRA TECFAG
         const perguntasOficiais = [
             { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas e firmes nos seus devidos lugares?", critico: false },
-            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência periféricos estão visíveis e respondendo ao teste de acionamento mecânico?", critico: true },
-            { id: "p3", secao: "ESTRUTURA & ROLETES", texto: "Os roletes de tração e retorno giram livremente, sem ruído de rolamento estourado ou travamentos?", critico: false },
+            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência estão visíveis e respondendo ao teste de acionamento?", critico: true },
+            { id: "p3", secao: "ESTRUTURA & ROLETES", texto: "Os roletes de tração e retorno giram livremente, sem ruído de rolamento estourado?", critico: false },
             { id: "p4", secao: "ESTRUTURA & ROLETES", texto: "Alinhamento da estrutura metálica livre de impactos visíveis ou empenos?", critico: false },
-            { id: "p5", secao: "CORREIA (LONA)", texto: "A lona/correia transportadora está centralizada sem raspar nas laterais da estrutura?", critico: false },
-            { id: "p6", secao: "CORREIA (LONA)", texto: "A lona apresenta integridade física total (ausência de rasgos, furos ou desfiamento severo)?", critico: true },
-            { id: "p7", secao: "MOTORREDUTOR", texto: "Ausência de ruídos estridentes, estalos internos ou vibrações fora do comum vindas do motor?", critico: true },
-            { id: "p8", secao: "MOTORREDUTOR", texto: "O motor está livre de vazamentos visíveis de óleo lubrificante ou superaquecimento ao toque?", clerical: false },
-            { id: "p9", secao: "PAINEL ELÉTRICO", texto: "Chave liga/desliga externa e potenciômetro de velocidade operam perfeitamente sem falhas?", critico: true }
+            { id: "p5", secao: "CORREIA (LONA)", texto: "A lona/correia transportadora está centralizada sem raspar nas laterais?", critico: false },
+            { id: "p6", secao: "CORREIA (LONA)", texto: "A lona apresenta integridade física total (ausência de rasgos ou desfiamento severo)?", critico: true },
+            { id: "p7", secao: "MOTORREDUTOR", texto: "Ausência de ruídos estridentes, estalos internos ou vibrações fora do comum?", critico: true },
+            { id: "p8", secao: "MOTORREDUTOR", texto: "O motor está livre de vazamentos visíveis de óleo lubrificante ou superaquecimento?", critico: false },
+            { id: "p9", secao: "PAINEL ELÉTRICO", texto: "Chave liga/desliga externa e potenciômetro de velocidade operam perfeitamente?", critico: true }
         ];
 
         let usuarioAtivo = "";
-        let nivelAcesso = ""; // "operador" ou "manutencao"
+        let nivelAcesso = ""; 
         let logsSessao = [];
         let contagemChecklist = 0;
         let contagemOS = 0;
 
-        // Login Inteligente (Separa quem é quem)
+        // Login Inteligente
         document.getElementById('btn-entrar-login').addEventListener('click', () => {
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
             
             if (!user) return;
 
-            // Regra de Acessos
             if (user.startsWith('manut') && (senha === "1234" || senha === "0000")) {
                 nivelAcesso = "manutencao";
                 document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Engenharia de Manutenção";
@@ -198,166 +197,4 @@
                 alternarAba('dashboard');
             } else if ((senha === "0000" || senha === "1234")) {
                 nivelAcesso = "operador";
-                document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Painel de Fábrica";
-                document.getElementById('titulo-painel-dinamico').className = "titulo-operador";
-                document.getElementById('menu-manutencao-abas').classList.add('escondido');
-                document.getElementById('menu-operador-abas').classList.remove('escondido');
-                alternarAba('chk');
-                montarPerguntas();
-            } else {
-                alert("Credenciais incorretas.");
-                return;
-            }
-
-            usuarioAtivo = user;
-            document.getElementById('user-display').innerText = user.toUpperCase();
-            document.getElementById('bloco-login').classList.add('escondido');
-            document.getElementById('bloco-sistema').classList.remove('escondido');
-        });
-
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            document.getElementById('bloco-sistema').classList.add('escondido');
-            document.getElementById('bloco-login').classList.remove('escondido');
-            document.getElementById('form-login').reset();
-        });
-
-        function montarPerguntas() {
-            const container = document.getElementById('container-perguntas');
-            let html = "";
-            let secaoAtual = "";
-            
-            perguntasOficiais.forEach(p => {
-                if(p.secao !== secaoAtual) {
-                    secaoAtual = p.secao;
-                    html += `<div class="header-secao-checklist">${secaoAtual}</div>`;
-                }
-                html += `
-                    <div class="pergunta-card ${p.critico ? 'critico' : ''}">
-                        <span class="pergunta-texto">${p.texto} ${p.critico ? '<b style="color:#ef4444;">(*)</b>' : ''}</span>
-                        <div class="opcoes-radio">
-                            <label><input type="radio" name="${p.id}" value="OK" required> OK</label>
-                            <label><input type="radio" name="${p.id}" value="NOK"> NOK</label>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function alternarAba(aba) {
-            document.querySelectorAll('.secao-conteudo').forEach(b => b.classList.add('escondido'));
-            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('ativo'));
-            document.getElementById(`aba-${aba}`).classList.remove('escondido');
-            
-            // Ativa o botão correto da lista visível
-            const menuVisivel = nivelAcesso === "manutencao" ? 'menu-manutencao-abas' : 'menu-operador-abas';
-            const itens = document.getElementById(menuVisivel).getElementsByTagName('li');
-            for(let i=0; i<itens.length; i++) {
-                if(itens[i].getAttribute('onclick').includes(`'${aba}'`)) {
-                    itens[i].classList.add('ativo');
-                }
-            }
-        }
-
-        async function enviarParaNuvem(dados) {
-            try {
-                await fetch(URL_GOOGLE_SCRIPT, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
-                });
-                return true;
-            } catch (e) {
-                console.error(e);
-                return false;
-            }
-        }
-
-        // Submit do Checklist
-        document.getElementById('form-checklist').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            let detalhes = [];
-            let travouMaquina = false;
-
-            perguntasOficiais.forEach(p => {
-                const resp = document.querySelector(`input[name="${p.id}"]:checked`).value;
-                detalhes.push(`${p.id.toUpperCase()}: ${resp}`);
-                if(p.critico && resp === "NOK") travouMaquina = true;
-            });
-
-            const payload = {
-                data: new Date().toLocaleString('pt-BR'),
-                usuario: usuarioAtivo,
-                equipamento: document.getElementById('seletor-equipamento').value,
-                tipo: "CHECKLIST",
-                detalhes: (travouMaquina ? "[MÁQUINA PARADA] " : "[OK] ") + detalhes.join(' | ')
-            };
-
-            alert("Salvando Checklist na planilha Google...");
-            await enviarParaNuvem(payload);
-            
-            contagemChecklist++;
-            if(travouMaquina) document.getElementById('ind-status').innerText = "BLOQUEADA";
-
-            logsSessao.unshift(payload);
-            atualizarTelasLogs();
-
-            if(travouMaquina) {
-                alert("🚨 ALERTA CRÍTICO: Item obrigatório reprovado! A Manutenção foi notificada.");
-            } else {
-                alert("✅ Checklist enviado com sucesso!");
-            }
-            document.getElementById('form-checklist').reset();
-        });
-
-        // Submit da O.S.
-        document.getElementById('form-os').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                data: new Date().toLocaleString('pt-BR'),
-                usuario: usuarioAtivo,
-                equipamento: document.getElementById('seletor-equipamento').value,
-                tipo: "ORDEM DE SERVIÇO",
-                detalhes: document.getElementById('os-descricao').value
-            };
-
-            alert("Registrando O.S. na planilha...");
-            await enviarParaNuvem(payload);
-            
-            contagemOS++;
-            document.getElementById('ind-status').innerText = "EM MANUTENÇÃO";
-
-            logsSessao.unshift(payload);
-            atualizarTelasLogs();
-            
-            alert("🛠️ O.S. registrada!");
-            document.getElementById('form-os').reset();
-            alternarAba('hist');
-        });
-
-        function atualizarTelasLogs() {
-            // Atualiza indicadores numéricos
-            document.getElementById('ind-checklists').innerText = contagemChecklist;
-            document.getElementById('ind-os').innerText = contagemOS;
-
-            // Tela de Histórico Local (Operador)
-            document.getElementById('lista-historico-local').innerHTML = logsSessao.filter(l => l.usuario === usuarioAtivo).map(log => `
-                <div class="os-status-item">
-                    <strong>${log.data} - ${log.tipo}</strong><br>
-                    <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
-                </div>
-            `).join('');
-
-            // Tela de Feed Geral (Manutenção)
-            document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
-                <div class="os-status-item" style="border-left: 4px solid ${log.tipo.includes('ORDEM') ? '#f59e0b' : '#10b981'}">
-                    <strong>${log.data} - ${log.tipo}</strong><br>
-                    <span style="font-size:11px; color:#94a3b8;">Enviado por: ${log.usuario.toUpperCase()}</span>
-                    <p style="margin:5px 0 0 0; color:#e2e8f0;">${log.detalhes}</p>
-                </div>
-            `).join('');
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('titulo-
