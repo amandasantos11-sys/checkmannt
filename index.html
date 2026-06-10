@@ -111,7 +111,7 @@
                     <div class="form-group">
                         <label>MÁQUINA DIRECIONADA:</label>
                         <select id="seletor-equipamento-op">
-                            </select>
+                        </select>
                     </div>
                     <form id="form-checklist">
                         <div class="area-rolavel-checklist" id="container-perguntas"></div>
@@ -140,14 +140,14 @@
                         <div class="form-group">
                             <label>Grau de Criticidade / Urgência:</label>
                             <select id="os-criticidade" style="border-left: 4px solid #ef4444;" required>
-                                <option value="baixa">🟢 BAIXA (Máquina roda, reparo estético/preventivo)</option>
-                                <option value="media">🟡 MÉDIA (Máquina roda com restrição ou ruído anormal)</option>
-                                <option value="alta">🔴 ALTA / CRÍTICA (Máquina parada ou risco de acidente!)</option>
+                                <option value="baixa">🟢 BAIXA (Reparo estético/preventivo)</option>
+                                <option value="media">🟡 MÉDIA (Máquina roda com restrição ou ruído)</option>
+                                <option value="alta">🔴 ALTA / CRÍTICA (Máquina parada ou risco!)</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Descrição Detalhada do Defeito:</label>
-                            <textarea id="os-descricao" rows="4" placeholder="Descreva claramente o problema, ruídos ou anomalia..." required></textarea>
+                            <textarea id="os-descricao" rows="4" placeholder="Descreva claramente o problema..." required></textarea>
                         </div>
                         <button type="submit" class="btn-laranja">Emitir Ordem de Serviço</button>
                     </form>
@@ -175,7 +175,7 @@
                         </div>
                     </div>
                     <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
-                        <p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8;">Deseja extrair ou ver o relatório completo diretamente no Excel/Google?</p>
+                        <p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8;">Deseja ver o relatório completo diretamente no Google Sheets?</p>
                         <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direto da Planilha de Dados ↗</a>
                     </div>
                 </div>
@@ -209,11 +209,11 @@
                             <h4 style="margin: 0 0 10px 0; color:#38bdf8;">📝 Criar Nova Pergunta de Checklist</h4>
                             <div class="form-group">
                                 <label>Texto da Pergunta:</label>
-                                <input type="text" id="cfg-nova-pergunta" placeholder="Ex: Verificar nível de óleo do cárter">
+                                <input type="text" id="cfg-nova-pergunta" placeholder="Ex: Verificar nível de óleo">
                             </div>
                             <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                                 <div style="flex:1;">
-                                    <label style="font-size:11px; font-weight:bold; color:#94a3b8;">Setor:</label>
+                                    <label>Setor:</label>
                                     <select id="cfg-pergunta-secao">
                                         <option value="SEGURANÇA (NR-12)">Segurança</option>
                                         <option value="ESTRUTURA & ROLETES">Estrutura</option>
@@ -223,7 +223,7 @@
                                     </select>
                                 </div>
                                 <div style="flex:1;">
-                                    <label style="font-size:11px; font-weight:bold; color:#94a3b8;">Item Crítico?</label>
+                                    <label>Item Crítico?</label>
                                     <select id="cfg-pergunta-critico">
                                         <option value="nao">Não</option>
                                         <option value="sim">Sim (Tranca máquina se der NOK)</option>
@@ -242,13 +242,261 @@
     <script>
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxPeXxVKCDVSpQJ1gUg9tuDX0zRVfMU9SYdl5TGZ82naoGF-mnj2EvewndBY-WYQdds/exec";
 
-        // LISTA DE EQUIPAMENTOS (Manutenção pode expandir!)
         let listaEquipamentos = [
             "Esteira Transportadora Tecfag RC1M/V90"
         ];
 
-        // CHECKLIST COMPLETO ORIGINAL
         let perguntasOficiais = [
-            { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas e firmes nos seus devidos lugares?", critico: false },
-            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência estão visíveis e respondendo ao teste de acionamento?", critico: true },
-            { id: "p3", secao: "ESTRUTURA & RO
+            { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas?", critico: false },
+            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência estão visíveis e respondendo?", critico: true },
+            { id: "p3", secao: "ESTRUTURA & ROLETES", texto: "Os roletes de tração e retorno giram livremente?", critico: false },
+            { id: "p4", secao: "ESTRUTURA & ROLETES", texto: "Alinhamento da estrutura metálica livre de impactos?", critico: false },
+            { id: "p5", secao: "CORREIA (LONA)", texto: "A lona/correia transportadora está centralizada?", critico: false },
+            { id: "p6", secao: "CORREIA (LONA)", texto: "A lona apresenta integridade física total?", critico: true },
+            { id: "p7", secao: "MOTORREDUTOR", texto: "Ausência de ruídos estridentes ou estalos?", critico: true },
+            { id: "p8", secao: "MOTORREDUTOR", texto: "O motor está livre de vazamentos visíveis?", critico: false },
+            { id: "p9", secao: "PAINEL ELÉTRICO", texto: "Chave liga/desliga externa e potenciômetro operam?", critico: true }
+        ];
+
+        let usuarioAtivo = "";
+        let nivelAcesso = ""; 
+        let logsSessao = [];
+        let contagemChecklist = 0;
+        let contagemOS = 0;
+
+        function atualizarSeletoresMaquinas() {
+            const selectOp = document.getElementById('seletor-equipamento-op');
+            if(selectOp) {
+                selectOp.innerHTML = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
+            }
+        }
+
+        // Login Simplificado e Blindado
+        document.getElementById('btn-entrar-login').onclick = function() {
+            const user = document.getElementById('login-usuario').value.trim().toLowerCase();
+            const senha = document.getElementById('login-senha').value;
+            
+            if (!user) {
+                alert("Por favor, digite o seu usuário.");
+                return;
+            }
+
+            if (senha !== "0000" && senha !== "1234") {
+                alert("Senha incorreta.");
+                return;
+            }
+
+            if (user.startsWith('manut')) {
+                nivelAcesso = "manutencao";
+                document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Engenharia de Manutenção";
+                document.getElementById('titulo-painel-dinamico').className = "titulo-manutencao";
+                document.getElementById('menu-operador-abas').classList.add('escondido');
+                document.getElementById('menu-manutencao-abas').classList.remove('escondido');
+                document.getElementById('link-manual-pdf').classList.add('escondido');
+                alternarAba('dashboard');
+            } else {
+                nivelAcesso = "operador";
+                document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Painel de Fábrica";
+                document.getElementById('titulo-painel-dinamico').className = "titulo-operador";
+                document.getElementById('menu-manutencao-abas').classList.add('escondido');
+                document.getElementById('menu-operador-abas').classList.remove('escondido');
+                document.getElementById('link-manual-pdf').classList.remove('escondido');
+                alternarAba('chk');
+                montarPerguntas();
+            }
+
+            usuarioAtivo = user;
+            document.getElementById('user-display').innerText = user.toUpperCase();
+            document.getElementById('bloco-login').classList.add('escondido');
+            document.getElementById('bloco-sistema').classList.remove('escondido');
+            atualizarSeletoresMaquinas();
+        };
+
+        document.getElementById('btn-logout').onclick = function() {
+            document.getElementById('bloco-sistema').classList.add('escondido');
+            document.getElementById('bloco-login').classList.remove('escondido');
+            document.getElementById('form-login').reset();
+        };
+
+        function montarPerguntas() {
+            const container = document.getElementById('container-perguntas');
+            let html = "";
+            let secaoAtual = "";
+            
+            perguntasOficiais.forEach(p => {
+                if(p.secao !== secaoAtual) {
+                    secaoAtual = p.secao;
+                    html += `<div class="header-secao-checklist">${secaoAtual}</div>`;
+                }
+                html += `
+                    <div class="pergunta-card ${p.critico ? 'critico' : ''}">
+                        <span class="pergunta-texto">${p.texto} ${p.critico ? '<b style="color:#ef4444;">(*)</b>' : ''}</span>
+                        <div class="opcoes-radio">
+                            <label><input type="radio" name="${p.id}" value="OK" required> OK</label>
+                            <label><input type="radio" name="${p.id}" value="NOK"> NOK</label>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function alternarAba(abaId) {
+            document.querySelectorAll('.secao-conteudo').forEach(bloco => bloco.classList.add('escondido'));
+            const abaAlvo = document.getElementById(`aba-${abaId}`);
+            if(abaAlvo) abaAlvo.classList.remove('escondido');
+            
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('ativo'));
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${abaId}'`)) {
+                    item.classList.add('ativo');
+                }
+            });
+        }
+
+        function adicionarNovaMaquina() {
+            const nome = document.getElementById('cfg-nova-maquina').value.trim();
+            if(!nome) return alert("Digite o nome do equipamento!");
+            listaEquipamentos.push(nome);
+            atualizarSeletoresMaquinas();
+            alert(`✅ Equipamento "${nome}" adicionado!`);
+            document.getElementById('cfg-nova-maquina').value = "";
+        }
+
+        function adicionarNovaPergunta() {
+            const texto = document.getElementById('cfg-nova-pergunta').value.trim();
+            const secao = document.getElementById('cfg-pergunta-secao').value;
+            const ehCritico = document.getElementById('cfg-pergunta-critico').value === "sim";
+            
+            if(!texto) return alert("Digite o texto da pergunta!");
+            
+            const novoId = "p" + (perguntasOficiais.length + 1);
+            perguntasOficiais.push({ id: novoId, secao: secao, texto: texto, critico: ehCritico });
+            
+            alert("✅ Pergunta adicionada!");
+            document.getElementById('cfg-nova-pergunta').value = "";
+        }
+
+        async function enviarParaNuvem(dados) {
+            try {
+                await fetch(URL_GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                return true;
+            } catch (e) {
+                console.error(e);
+                return false;
+            }
+        }
+
+        document.getElementById('form-checklist').onsubmit = async function(e) {
+            e.preventDefault();
+            let detalhes = [];
+            let travouMaquina = false;
+
+            perguntasOficiais.forEach(p => {
+                const checkedEl = document.querySelector(`input[name="${p.id}"]:checked`);
+                const resp = checkedEl ? checkedEl.value : "N/A";
+                detalhes.push(`${p.id.toUpperCase()}(${resp})`);
+                if(p.critico && resp === "NOK") travouMaquina = true;
+            });
+
+            const payload = {
+                data: new Date().toLocaleString('pt-BR'),
+                usuario: usuarioAtivo,
+                equipamento: document.getElementById('seletor-equipamento-op').value,
+                tipo: "CHECKLIST",
+                detalhes: (travouMaquina ? "[🚨 CRÍTICO REPROVADO] " : "[✅ APROVADO] ") + detalhes.join(' | ')
+            };
+
+            alert("Transmitindo respostas do Checklist para a planilha Google...");
+            await enviarParaNuvem(payload);
+            
+            contagemChecklist++;
+            if(travouMaquina) document.getElementById('ind-status').innerText = "BLOQUEADA";
+
+            logsSessao.unshift(payload);
+            atualizarVisualizacaoLogs();
+
+            if(travouMaquina) {
+                alert("🚨 ALERTA CRÍTICO: Item reprovado! Equipamento parado.");
+            } else {
+                alert("✅ Checklist enviado!");
+            }
+            document.getElementById('form-checklist').reset();
+        };
+
+        document.getElementById('form-os').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            const nomeOp = document.getElementById('os-nome-op').value.trim();
+            const turnoOp = document.getElementById('os-turno-op').value;
+            const criticidade = document.getElementById('os-criticidade').value;
+            const descricao = document.getElementById('os-descricao').value.trim();
+            const maquina = document.getElementById('seletor-equipamento-op').value;
+
+            const payload = {
+                data: new Date().toLocaleString('pt-BR'),
+                usuario: usuarioAtivo,
+                equipamento: maquina,
+                tipo: "ORDEM DE SERVIÇO",
+                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${nomeOp} (${turnoOp}) | Defeito: ${descricao}`,
+                metaCriticidade: criticidade
+            };
+
+            alert("Registrando O.S. no Backlog...");
+            await enviarParaNuvem(payload);
+            
+            contagemOS++;
+            document.getElementById('ind-status').innerText = criticidade === 'alta' ? "BLOQUEADA" : "EM MANUTENÇÃO";
+
+            logsSessao.unshift(payload);
+            atualizarVisualizacaoLogs();
+            
+            alert("🛠️ O.S. emitida!");
+            document.getElementById('form-os').reset();
+            document.getElementById('os-nome-op').value = "";
+            alternarAba('hist');
+        };
+
+        function atualizarVisualizacaoLogs() {
+            document.getElementById('ind-checklists').innerText = contagemChecklist;
+            document.getElementById('ind-os').innerText = contagemOS;
+
+            document.getElementById('lista-historico-local').innerHTML = logsSessao.filter(l => l.usuario === usuarioAtivo).map(log => `
+                <div class="os-status-item">
+                    <strong>${log.data} - ${log.tipo}</strong><br>
+                    <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
+                <div class="os-status-item" style="border-left: 4px solid ${log.tipo.includes('ORDEM') ? '#f59e0b' : '#10b981'}">
+                    <strong>${log.data} - ${log.tipo}</strong><br>
+                    <span style="font-size:11px; color:#94a3b8;">Máquina: ${log.equipamento}</span>
+                    <p style="margin:5px 0 0 0; color:#e2e8f0; font-family: monospace; font-size:11px;">${log.detalhes}</p>
+                </div>
+            `).join('');
+
+            const apenasOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
+            if(apenasOS.length === 0) {
+                document.getElementById('lista-backlog-manutencao').innerHTML = `<p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente.</p>`;
+            } else {
+                document.getElementById('lista-backlog-manutencao').innerHTML = apenasOS.map(log => {
+                    const classeTag = log.metaCriticidade ? `tag-${log.metaCriticidade}` : 'tag-baixa';
+                    return `
+                        <div class="os-status-item" style="border-left: 4px solid #f59e0b; padding-right: 70px;">
+                            <span class="tag-critica ${classeTag}">${log.metaCriticidade || 'baixa'}</span>
+                            <strong>${log.data} - ${log.equipamento}</strong><br>
+                            <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+    </script>
+</body>
+</html>
