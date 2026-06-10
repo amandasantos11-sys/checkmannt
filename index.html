@@ -44,7 +44,6 @@
         .escondido { display: none !important; }
         .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative; }
         
-        /* Dashboard & Backlog */
         .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .card-indicador { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; text-align: center; }
         .card-indicador h3 { margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase; }
@@ -86,6 +85,7 @@
                 <p>Usuário ativo: <span id="user-display" style="font-weight:bold;"></span></p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="carregarDadosDaNuvem()" class="btn-azul" style="width:auto; margin:0; padding:8px 15px; font-size:12px;">🔄 Sincronizar Nuvem</button>
                 <a id="link-manual-pdf" href="https://drive.google.com/open?id=1gfqVzkarCs9OvyImF73ZhPwKrr8yqAOB" target="_blank" class="btn-manual" style="padding:8px 15px; font-size:12px;">📕 Manual da Esteira (PDF) ↗</a>
                 <button id="btn-logout" class="btn-cinza" style="width:auto; margin:0; padding:8px 15px;">Sair</button>
             </div>
@@ -95,7 +95,7 @@
             <ul class="menu-lista" id="menu-operador-abas">
                 <li class="menu-item ativo" onclick="alternarAba('chk')">📋 Checklist Diário</li>
                 <li class="menu-item" onclick="alternarAba('os')">🛠️ Abrir O.S. de Defeito</li>
-                <li class="menu-item" onclick="alternarAba('hist')">🕒 Histórico Local</li>
+                <li class="menu-item" onclick="alternarAba('hist')">🕒 Histórico Geral da Máquina</li>
             </ul>
 
             <ul class="menu-lista escondido" id="menu-manutencao-abas">
@@ -111,8 +111,7 @@
                     <h2 class="titulo-operador">📋 Checklist Operacional Diário</h2>
                     <div class="form-group">
                         <label>MÁQUINA DIRECIONADA:</label>
-                        <select id="seletor-equipamento-op">
-                        </select>
+                        <select id="seletor-equipamento-op"></select>
                     </div>
                     <form id="form-checklist">
                         <div class="area-rolavel-checklist" id="container-perguntas"></div>
@@ -155,8 +154,10 @@
                 </div>
 
                 <div id="aba-hist" class="bloco secao-conteudo escondido">
-                    <h2 style="color: #60a5fa;">🕒 Envios Recentes desta Máquina</h2>
-                    <div id="lista-historico-local"></div>
+                    <h2 style="color: #60a5fa;">🕒 Histórico Unificado Nuvem</h2>
+                    <div id="lista-historico-local">
+                        <p style="color:#94a3b8; font-size:12px;">Sincronizando histórico da nuvem...</p>
+                    </div>
                 </div>
 
                 <div id="aba-dashboard" class="bloco secao-conteudo escondido">
@@ -167,7 +168,7 @@
                             <p class="txt-verde" id="ind-status">OPERANDO</p>
                         </div>
                         <div class="card-indicador">
-                            <h3>OEE do Equipamento</h3>
+                            <h3>OEE Estimado</h3>
                             <p class="txt-roxo" id="ind-oee">100%</p>
                         </div>
                         <div class="card-indicador">
@@ -181,21 +182,21 @@
                     </div>
                     <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
                         <p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8;">Deseja ver o relatório completo diretamente no Google Sheets?</p>
-                        <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direct da Planilha de Dados ↗</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direto da Planilha de Dados ↗</a>
                     </div>
                 </div>
 
                 <div id="aba-feed" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento em Tempo Real</h2>
+                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento (Todos os Aparelhos)</h2>
                     <div id="lista-feed-manutencao">
-                        <p style="color:#94a3b8; font-size: 12px;">Aguardando recebimento de envios operacionais...</p>
+                        <p style="color:#94a3b8; font-size: 12px;">Carregando dados da nuvem...</p>
                     </div>
                 </div>
 
                 <div id="aba-backlog" class="bloco secao-conteudo escondido">
                     <h2 class="titulo-manutencao">🗂️ Backlog Geral de Ordens de Serviço</h2>
                     <div id="lista-backlog-manutencao">
-                        <p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente no momento.</p>
+                        <p style="color:#94a3b8; font-size: 12px;">Carregando Ordens pendentes...</p>
                     </div>
                 </div>
 
@@ -220,7 +221,7 @@
                                 <div style="flex:1;">
                                     <label>Setor:</label>
                                     <select id="cfg-pergunta-secao">
-                                        <option value="SEGURANÇA (NR-12)">Segurança</option>
+                                        <option value="SEGURANÇA (NR-12)">Securança</option>
                                         <option value="ESTRUTURA & ROLETES">Estrutura</option>
                                         <option value="CORREIA (LONA)">Correia/Lona</option>
                                         <option value="MOTORREDUTOR">Motor/Transmissão</option>
@@ -247,9 +248,7 @@
     <script>
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxPeXxVKCDVSpQJ1gUg9tuDX0zRVfMU9SYdl5TGZ82naoGF-mnj2EvewndBY-WYQdds/exec";
 
-        let listaEquipamentos = [
-            "Esteira Transportadora Tecfag RC1M/V90"
-        ];
+        let listaEquipamentos = ["Esteira Transportadora Tecfag RC1M/V90"];
 
         let perguntasOficiais = [
             { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas?", critico: false },
@@ -266,10 +265,6 @@
         let usuarioAtivo = "";
         let nivelAcesso = ""; 
         let logsSessao = [];
-        let contagemChecklist = 0;
-        let contagemOS = 0;
-        let respostasOkGlobais = 0;
-        let totalRespostasGlobais = 0;
 
         function atualizarSeletoresMaquinas() {
             const selectOp = document.getElementById('seletor-equipamento-op');
@@ -278,19 +273,26 @@
             }
         }
 
+        // BUSCA INTEGRADA DIRETO DO GOOGLE SHEETS
+        async function carregarDadosDaNuvem() {
+            try {
+                const resposta = await fetch(URL_GOOGLE_SCRIPT);
+                const dados = await resposta.json();
+                if (Array.isArray(dados) && dados.length > 0) {
+                    logsSessao = dados;
+                    atualizarVisualizacaoLogs();
+                }
+            } catch (e) {
+                console.log("Aguardando novas linhas da planilha...");
+            }
+        }
+
         document.getElementById('btn-entrar-login').onclick = function() {
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
             
-            if (!user) {
-                alert("Por favor, digite o seu usuário.");
-                return;
-            }
-
-            if (senha !== "0000" && senha !== "1234") {
-                alert("Senha incorreta.");
-                return;
-            }
+            if (!user) return alert("Por favor, digite o seu usuário.");
+            if (senha !== "0000" && senha !== "1234") return alert("Senha incorreta.");
 
             if (user.startsWith('manut')) {
                 nivelAcesso = "manutencao";
@@ -298,7 +300,7 @@
                 document.getElementById('titulo-painel-dinamico').className = "titulo-manutencao";
                 document.getElementById('menu-operador-abas').classList.add('escondido');
                 document.getElementById('menu-manutencao-abas').classList.remove('escondido');
-                document.getElementById('link-manual-pdf').classList.add('escondido'); // Esconde da manutenção
+                document.getElementById('link-manual-pdf').classList.add('escondido');
                 alternarAba('dashboard');
             } else {
                 nivelAcesso = "operador";
@@ -306,7 +308,7 @@
                 document.getElementById('titulo-painel-dinamico').className = "titulo-operador";
                 document.getElementById('menu-manutencao-abas').classList.add('escondido');
                 document.getElementById('menu-operador-abas').classList.remove('escondido');
-                document.getElementById('link-manual-pdf').classList.remove('escondido'); // Mostra para operador
+                document.getElementById('link-manual-pdf').classList.remove('escondido');
                 alternarAba('chk');
                 montarPerguntas();
             }
@@ -316,6 +318,7 @@
             document.getElementById('bloco-login').classList.add('escondido');
             document.getElementById('bloco-sistema').classList.remove('escondido');
             atualizarSeletoresMaquinas();
+            carregarDadosDaNuvem(); // Puxa os dados assim que faz login
         };
 
         document.getElementById('btn-logout').onclick = function() {
@@ -373,12 +376,9 @@
             const texto = document.getElementById('cfg-nova-pergunta').value.trim();
             const secao = document.getElementById('cfg-pergunta-secao').value;
             const ehCritico = document.getElementById('cfg-pergunta-critico').value === "sim";
-            
             if(!texto) return alert("Digite o texto da pergunta!");
-            
             const novoId = "p" + (perguntasOficiais.length + 1);
             perguntasOficiais.push({ id: novoId, secao: secao, texto: texto, critico: ehCritico });
-            
             alert("✅ Pergunta adicionada!");
             document.getElementById('cfg-nova-pergunta').value = "";
         }
@@ -407,11 +407,6 @@
                 const checkedEl = document.querySelector(`input[name="${p.id}"]:checked`);
                 const resp = checkedEl ? checkedEl.value : "N/A";
                 detalhes.push(`${p.id.toUpperCase()}(${resp})`);
-                
-                // Cálculo dinâmico para OEE com base em itens conformes
-                totalRespostasGlobais++;
-                if (resp === "OK") respostasOkGlobais++;
-
                 if(p.critico && resp === "NOK") travouMaquina = true;
             });
 
@@ -426,11 +421,9 @@
             alert("Transmitindo respostas do Checklist para a planilha Google...");
             await enviarParaNuvem(payload);
             
-            contagemChecklist++;
-            if(travouMaquina) document.getElementById('ind-status').innerText = "BLOQUEADA";
-
+            // Adiciona localmente e sincroniza
             logsSessao.unshift(payload);
-            atualizarVisualizacaoLogs();
+            setTimeout(carregarDadosDaNuvem, 1500);
 
             if(travouMaquina) {
                 alert("🚨 ALERTA CRÍTICO: Item reprovado! Equipamento parado.");
@@ -442,7 +435,6 @@
 
         document.getElementById('form-os').onsubmit = async function(e) {
             e.preventDefault();
-            
             const nomeOp = document.getElementById('os-nome-op').value.trim();
             const turnoOp = document.getElementById('os-turno-op').value;
             const criticidade = document.getElementById('os-criticidade').value;
@@ -454,18 +446,14 @@
                 usuario: usuarioAtivo,
                 equipamento: maquina,
                 tipo: "ORDEM DE SERVIÇO",
-                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${nomeOp} (${turnoOp}) | Defeito: ${descricao}`,
-                metaCriticidade: criticidade
+                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${nomeOp} (${turnoOp}) | Defeito: ${descricao}`
             };
 
             alert("Registrando O.S. no Backlog...");
             await enviarParaNuvem(payload);
             
-            contagemOS++;
-            document.getElementById('ind-status').innerText = criticidade === 'alta' ? "BLOQUEADA" : "EM MANUTENÇÃO";
-
             logsSessao.unshift(payload);
-            atualizarVisualizacaoLogs();
+            setTimeout(carregarDadosDaNuvem, 1500);
             
             alert("🛠️ O.S. emitida!");
             document.getElementById('form-os').reset();
@@ -474,39 +462,68 @@
         };
 
         function atualizarVisualizacaoLogs() {
-            document.getElementById('ind-checklists').innerText = contagemChecklist;
-            document.getElementById('ind-os').innerText = contagemOS;
+            // Filtros de contagem dinâmicos vindos da Nuvem
+            const totalChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST").length;
+            const totalOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO").length;
 
-            // Atualiza indicador de OEE em tempo real
-            if(totalRespostasGlobais > 0) {
-                let taxaOee = Math.round((respostasOkGlobais / totalRespostasGlobais) * 100);
-                document.getElementById('ind-oee').innerText = taxaOee + "%";
+            document.getElementById('ind-checklists').innerText = totalChecklists;
+            document.getElementById('ind-os').innerText = totalOS;
+
+            // Cálculo OEE Real da planilha
+            let totalRespostas = 0;
+            let respostasOk = 0;
+            logsSessao.filter(l => l.tipo === "CHECKLIST").forEach(log => {
+                if(log.detalhes.includes("OK")) {
+                    respostasOk++;
+                }
+                totalRespostas++;
+            });
+            if(totalRespostas > 0) {
+                let taxa = Math.round((respostasOk / totalRespostas) * 100);
+                document.getElementById('ind-oee').innerText = taxa + "%";
             }
 
-            document.getElementById('lista-historico-local').innerHTML = logsSessao.filter(l => l.usuario === usuarioAtivo).map(log => `
+            // Status baseado na última O.S.
+            const ultimaOS = logsSessao.find(l => l.tipo === "ORDEM DE SERVIÇO");
+            if(ultimaOS && ultimaOS.detalhes.includes("CRITICIDADE: ALTA")) {
+                document.getElementById('ind-status').innerText = "BLOQUEADA";
+                document.getElementById('ind-status').className = "txt-laranja";
+            } else {
+                document.getElementById('ind-status').innerText = "OPERANDO";
+                document.getElementById('ind-status').className = "txt-verde";
+            }
+
+            // Histórico na visão do operador (Geral de todos os envios da máquina)
+            document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
                 <div class="os-status-item">
-                    <strong>${log.data} - ${log.tipo}</strong><br>
+                    <strong>${log.data} - ${log.tipo}</strong> (Por: ${log.usuario.toUpperCase()})<br>
                     <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
                 </div>
             `).join('');
 
+            // Feed da Manutenção
             document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
                 <div class="os-status-item" style="border-left: 4px solid ${log.tipo.includes('ORDEM') ? '#f59e0b' : '#10b981'}">
                     <strong>${log.data} - ${log.tipo}</strong><br>
-                    <span style="font-size:11px; color:#94a3b8;">Máquina: ${log.equipamento}</span>
+                    <span style="font-size:11px; color:#94a3b8;">Máquina: ${log.equipamento} | Usuário: ${log.usuario.toUpperCase()}</span>
                     <p style="margin:5px 0 0 0; color:#e2e8f0; font-family: monospace; font-size:11px;">${log.detalhes}</p>
                 </div>
             `).join('');
 
+            // Backlog da Manutenção
             const apenasOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
             if(apenasOS.length === 0) {
                 document.getElementById('lista-backlog-manutencao').innerHTML = `<p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente.</p>`;
             } else {
                 document.getElementById('lista-backlog-manutencao').innerHTML = apenasOS.map(log => {
-                    const classeTag = log.metaCriticidade ? `tag-${log.metaCriticidade}` : 'tag-baixa';
+                    let criticidadeTag = "tag-baixa";
+                    let critTxt = "baixa";
+                    if(log.detalhes.includes("CRITICIDADE: ALTA")) { criticidadeTag = "tag-alta"; critTxt = "alta"; }
+                    else if(log.detalhes.includes("CRITICIDADE: MEDIA")) { criticidadeTag = "tag-media"; critTxt = "média"; }
+                    
                     return `
                         <div class="os-status-item" style="border-left: 4px solid #f59e0b; padding-right: 70px;">
-                            <span class="tag-critica ${classeTag}">${log.metaCriticidade || 'baixa'}</span>
+                            <span class="tag-critica ${criticidadeTag}">${critTxt}</span>
                             <strong>${log.data} - ${log.equipamento}</strong><br>
                             <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
                         </div>
