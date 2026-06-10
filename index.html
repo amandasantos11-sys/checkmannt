@@ -23,7 +23,7 @@
         .conteudo-aba { flex: 1; }
         .bloco { background-color: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); margin-bottom: 20px; }
         .bloco h2 { margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid #475569; font-size: 20px; }
-        .area-rolavel-checklist { max-height: 55vh; overflow-y: auto; padding-right: 12px; margin-bottom: 15px; border: 1px solid #334155; background-color: #0f172a; border-radius: 8px; padding: 12px; }
+        .area-rolavel-checklist { max-height: 48vh; overflow-y: auto; padding-right: 12px; margin-bottom: 15px; border: 1px solid #334155; background-color: #0f172a; border-radius: 8px; padding: 12px; }
         .titulo-operador { color: #34d399; }
         .titulo-manutencao { color: #f59e0b; }
         .header-secao-checklist { background-color: #1e293b; color: #38bdf8; font-size: 11px; font-weight: bold; padding: 6px 10px; margin: 15px 0 6px 0; border-left: 3px solid #38bdf8; text-transform: uppercase; }
@@ -35,15 +35,16 @@
         input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 9px; background-color: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #f8fafc; font-size: 13px; box-sizing: border-box; }
         .opcoes-radio { display: flex; gap: 8px; }
         .opcoes-radio label { display: flex; align-items: center; gap: 4px; background-color: #0f172a; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; border: 1px solid #334155; }
-        button { width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; font-size: 14px; border: none; cursor: pointer; margin-bottom: 10px; display: block; text-align: center; box-sizing: border-box; }
+        button, .btn-manual { width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; font-size: 14px; border: none; cursor: pointer; margin-bottom: 10px; display: block; text-align: center; box-sizing: border-box; text-decoration: none; }
         .btn-azul { background-color: #2563eb; color: white; }
         .btn-verde { background-color: #059669; color: white; }
         .btn-laranja { background-color: #d97706; color: white; }
         .btn-cinza { background-color: #475569; color: white; }
+        .btn-manual { background-color: #dc2626; color: white; margin-top: 5px; }
         .escondido { display: none !important; }
-        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; }
+        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative; }
         
-        /* Indicadores da Manutenção */
+        /* Dashboard & Backlog */
         .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .card-indicador { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; text-align: center; }
         .card-indicador h3 { margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase; }
@@ -51,6 +52,10 @@
         .txt-verde { color: #10b981; }
         .txt-laranja { color: #f59e0b; }
         .txt-azul { color: #3b82f6; }
+        .tag-critica { position: absolute; top: 12px; right: 12px; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .tag-alta { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #b91c1c; }
+        .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
+        .tag-baixa { background-color: #14532d; color: #a7f3d0; border: 1px solid #15803d; }
     </style>
 </head>
 <body>
@@ -79,7 +84,10 @@
                 <h1 id="titulo-painel-dinamico">CHECKMANT - Painel de Fábrica</h1>
                 <p>Usuário ativo: <span id="user-display" style="font-weight:bold;"></span></p>
             </div>
-            <button id="btn-logout" class="btn-cinza" style="width:auto; margin:0; padding:8px 15px;">Sair</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a id="link-manual-pdf" href="https://www.tecfag.com.br" target="_blank" class="btn-manual" style="margin:0; padding:8px 15px; font-size:12px;">📕 Manual Técnico (PDF)</a>
+                <button id="btn-logout" class="btn-cinza" style="width:auto; margin:0; padding:8px 15px;">Sair</button>
+            </div>
         </header>
 
         <div class="layout-abas">
@@ -91,7 +99,9 @@
 
             <ul class="menu-lista escondido" id="menu-manutencao-abas">
                 <li class="menu-item ativo" onclick="alternarAba('dashboard')">📊 Indicadores / Painel</li>
-                <li class="menu-item" onclick="alternarAba('feed')">📥 Feed de O.S. e Checklists</li>
+                <li class="menu-item" onclick="alternarAba('feed')">📥 Feed de Acompanhamento</li>
+                <li class="menu-item" onclick="alternarAba('backlog')">🗂️ Backlog de O.S.</li>
+                <li class="menu-item" onclick="alternarAba('config')">⚙️ Cadastros e Itens</li>
             </ul>
 
             <div class="conteudo-aba">
@@ -100,9 +110,8 @@
                     <h2 class="titulo-operador">📋 Checklist Operacional Diário</h2>
                     <div class="form-group">
                         <label>MÁQUINA DIRECIONADA:</label>
-                        <select id="seletor-equipamento">
-                            <option value="Esteira Transportadora Tecfag RC1M/V90">Esteira Transportadora Tecfag RC1M/V90</option>
-                        </select>
+                        <select id="seletor-equipamento-op">
+                            </select>
                     </div>
                     <form id="form-checklist">
                         <div class="area-rolavel-checklist" id="container-perguntas"></div>
@@ -113,9 +122,32 @@
                 <div id="aba-os" class="bloco secao-conteudo escondido">
                     <h2 style="color: #f59e0b;">🛠️ Abrir O.S. de Manutenção</h2>
                     <form id="form-os">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Nome do Operador Solicitante:</label>
+                                <input type="text" id="os-nome-op" placeholder="Seu nome completo" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Turno de Trabalho:</label>
+                                <select id="os-turno-op">
+                                    <option value="1º Turno (Manhã)">1º Turno (Manhã)</option>
+                                    <option value="2º Turno (Tarde)">2º Turno (Tarde)</option>
+                                    <option value="3º Turno (Noite)">3º Turno (Noite)</option>
+                                    <option value="Administrativo / Geral">Administrativo / Geral</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="form-group">
-                            <label>Descrição do Defeito:</label>
-                            <textarea id="os-descricao" rows="4" placeholder="Descreva o problema ou ruído encontrado..." required></textarea>
+                            <label>Grau de Criticidade / Urgência:</label>
+                            <select id="os-criticidade" style="border-left: 4px solid #ef4444;" required>
+                                <option value="baixa">🟢 BAIXA (Máquina roda, reparo estético/preventivo)</option>
+                                <option value="media">🟡 MÉDIA (Máquina roda com restrição ou ruído anormal)</option>
+                                <option value="alta">🔴 ALTA / CRÍTICA (Máquina parada ou risco de acidente!)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição Detalhada do Defeito:</label>
+                            <textarea id="os-descricao" rows="4" placeholder="Descreva claramente o problema, ruídos ou anomalia..." required></textarea>
                         </div>
                         <button type="submit" class="btn-laranja">Emitir Ordem de Serviço</button>
                     </form>
@@ -138,7 +170,7 @@
                             <p class="txt-azul" id="ind-checklists">0</p>
                         </div>
                         <div class="card-indicador">
-                            <h3>O.S. Abertas</h3>
+                            <h3>O.S. Ativas</h3>
                             <p class="txt-laranja" id="ind-os">0</p>
                         </div>
                     </div>
@@ -149,9 +181,57 @@
                 </div>
 
                 <div id="aba-feed" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📥 Feed em Tempo Real (Registros Enviados)</h2>
+                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento em Tempo Real</h2>
                     <div id="lista-feed-manutencao">
-                        <p style="color:#94a3b8; font-size: 12px;">Nenhum registro recebido nesta sessão ainda.</p>
+                        <p style="color:#94a3b8; font-size: 12px;">Aguardando recebimento de envios operacionais...</p>
+                    </div>
+                </div>
+
+                <div id="aba-backlog" class="bloco secao-conteudo escondido">
+                    <h2 class="titulo-manutencao">🗂️ Backlog Geral de Ordens de Serviço</h2>
+                    <div id="lista-backlog-manutencao">
+                        <p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente no momento.</p>
+                    </div>
+                </div>
+
+                <div id="aba-config" class="bloco secao-conteudo escondido">
+                    <h2 class="titulo-manutencao">⚙️ Painel de Engenharia (Cadastros)</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <h4 style="margin: 0 0 10px 0; color:#38bdf8;">➕ Inserir Novo Equipamento</h4>
+                            <div class="form-group">
+                                <label>Nome / Modelo do Equipamento:</label>
+                                <input type="text" id="cfg-nova-maquina" placeholder="Ex: Seladora Tecfag TM400">
+                            </div>
+                            <button type="button" onclick="adicionarNovaMaquina()" class="btn-azul" style="padding:8px;">Adicionar na Lista</button>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 10px 0; color:#38bdf8;">📝 Criar Nova Pergunta de Checklist</h4>
+                            <div class="form-group">
+                                <label>Texto da Pergunta:</label>
+                                <input type="text" id="cfg-nova-pergunta" placeholder="Ex: Verificar nível de óleo do cárter">
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; font-weight:bold; color:#94a3b8;">Setor:</label>
+                                    <select id="cfg-pergunta-secao">
+                                        <option value="SEGURANÇA (NR-12)">Segurança</option>
+                                        <option value="ESTRUTURA & ROLETES">Estrutura</option>
+                                        <option value="CORREIA (LONA)">Correia/Lona</option>
+                                        <option value="MOTORREDUTOR">Motor/Transmissão</option>
+                                        <option value="PAINEL ELÉTRICO">Elétrica</option>
+                                    </select>
+                                </div>
+                                <div style="flex:1;">
+                                    <label style="font-size:11px; font-weight:bold; color:#94a3b8;">Item Crítico?</label>
+                                    <select id="cfg-pergunta-critico">
+                                        <option value="nao">Não</option>
+                                        <option value="sim">Sim (Tranca máquina se der NOK)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" onclick="adicionarNovaPergunta()" class="btn-azul" style="padding:8px;">Inserir Pergunta</button>
+                        </div>
                     </div>
                 </div>
 
@@ -162,39 +242,13 @@
     <script>
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxPeXxVKCDVSpQJ1gUg9tuDX0zRVfMU9SYdl5TGZ82naoGF-mnj2EvewndBY-WYQdds/exec";
 
-        // CHECKLIST COMPLETO DA ESTEIRA TECFAG
-        const perguntasOficiais = [
-            { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas e firmes nos seus devidos lugares?", critico: false },
-            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência estão visíveis e respondendo ao teste de acionamento?", critico: true },
-            { id: "p3", secao: "ESTRUTURA & ROLETES", texto: "Os roletes de tração e retorno giram livremente, sem ruído de rolamento estourado?", critico: false },
-            { id: "p4", secao: "ESTRUTURA & ROLETES", texto: "Alinhamento da estrutura metálica livre de impactos visíveis ou empenos?", critico: false },
-            { id: "p5", secao: "CORREIA (LONA)", texto: "A lona/correia transportadora está centralizada sem raspar nas laterais?", critico: false },
-            { id: "p6", secao: "CORREIA (LONA)", texto: "A lona apresenta integridade física total (ausência de rasgos ou desfiamento severo)?", critico: true },
-            { id: "p7", secao: "MOTORREDUTOR", texto: "Ausência de ruídos estridentes, estalos internos ou vibrações fora do comum?", critico: true },
-            { id: "p8", secao: "MOTORREDUTOR", texto: "O motor está livre de vazamentos visíveis de óleo lubrificante ou superaquecimento?", critico: false },
-            { id: "p9", secao: "PAINEL ELÉTRICO", texto: "Chave liga/desliga externa e potenciômetro de velocidade operam perfeitamente?", critico: true }
+        // LISTA DE EQUIPAMENTOS (Manutenção pode expandir!)
+        let listaEquipamentos = [
+            "Esteira Transportadora Tecfag RC1M/V90"
         ];
 
-        let usuarioAtivo = "";
-        let nivelAcesso = ""; 
-        let logsSessao = [];
-        let contagemChecklist = 0;
-        let contagemOS = 0;
-
-        // Login Inteligente
-        document.getElementById('btn-entrar-login').addEventListener('click', () => {
-            const user = document.getElementById('login-usuario').value.trim().toLowerCase();
-            const senha = document.getElementById('login-senha').value;
-            
-            if (!user) return;
-
-            if (user.startsWith('manut') && (senha === "1234" || senha === "0000")) {
-                nivelAcesso = "manutencao";
-                document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Engenharia de Manutenção";
-                document.getElementById('titulo-painel-dinamico').className = "titulo-manutencao";
-                document.getElementById('menu-operador-abas').classList.add('escondido');
-                document.getElementById('menu-manutencao-abas').classList.remove('escondido');
-                alternarAba('dashboard');
-            } else if ((senha === "0000" || senha === "1234")) {
-                nivelAcesso = "operador";
-                document.getElementById('titulo-
+        // CHECKLIST COMPLETO ORIGINAL
+        let perguntasOficiais = [
+            { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas e firmes nos seus devidos lugares?", critico: false },
+            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência estão visíveis e respondendo ao teste de acionamento?", critico: true },
+            { id: "p3", secao: "ESTRUTURA & RO
