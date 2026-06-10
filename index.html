@@ -40,18 +40,19 @@
         .btn-verde { background-color: #059669; color: white; }
         .btn-laranja { background-color: #d97706; color: white; }
         .btn-cinza { background-color: #475569; color: white; }
-        .btn-manual { background-color: #dc2626; color: white; margin-top: 5px; }
+        .btn-manual { background-color: #dc2626; color: white; margin-top: 0; display: inline-block; width: auto; }
         .escondido { display: none !important; }
         .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative; }
         
         /* Dashboard & Backlog */
-        .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .card-indicador { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; text-align: center; }
         .card-indicador h3 { margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase; }
         .card-indicador p { margin: 0; font-size: 28px; font-weight: bold; }
         .txt-verde { color: #10b981; }
         .txt-laranja { color: #f59e0b; }
         .txt-azul { color: #3b82f6; }
+        .txt-roxo { color: #a855f7; }
         .tag-critica { position: absolute; top: 12px; right: 12px; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .tag-alta { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #b91c1c; }
         .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
@@ -85,7 +86,7 @@
                 <p>Usuário ativo: <span id="user-display" style="font-weight:bold;"></span></p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <a id="link-manual-pdf" href="https://www.tecfag.com.br" target="_blank" class="btn-manual" style="margin:0; padding:8px 15px; font-size:12px;">📕 Manual Técnico (PDF)</a>
+                <a id="link-manual-pdf" href="https://drive.google.com/open?id=1gfqVzkarCs9OvyImF73ZhPwKrr8yqAOB" target="_blank" class="btn-manual" style="padding:8px 15px; font-size:12px;">📕 Manual da Esteira (PDF) ↗</a>
                 <button id="btn-logout" class="btn-cinza" style="width:auto; margin:0; padding:8px 15px;">Sair</button>
             </div>
         </header>
@@ -162,8 +163,12 @@
                     <h2 class="titulo-manutencao">📊 Indicadores de Performance e Status</h2>
                     <div class="grid-indicadores">
                         <div class="card-indicador">
-                            <h3>Status da Esteira</h3>
+                            <h3>Status Global</h3>
                             <p class="txt-verde" id="ind-status">OPERANDO</p>
+                        </div>
+                        <div class="card-indicador">
+                            <h3>OEE do Equipamento</h3>
+                            <p class="txt-roxo" id="ind-oee">100%</p>
                         </div>
                         <div class="card-indicador">
                             <h3>Checklists Hoje</h3>
@@ -176,7 +181,7 @@
                     </div>
                     <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
                         <p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8;">Deseja ver o relatório completo diretamente no Google Sheets?</p>
-                        <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direto da Planilha de Dados ↗</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direct da Planilha de Dados ↗</a>
                     </div>
                 </div>
 
@@ -263,6 +268,8 @@
         let logsSessao = [];
         let contagemChecklist = 0;
         let contagemOS = 0;
+        let respostasOkGlobais = 0;
+        let totalRespostasGlobais = 0;
 
         function atualizarSeletoresMaquinas() {
             const selectOp = document.getElementById('seletor-equipamento-op');
@@ -271,7 +278,6 @@
             }
         }
 
-        // Login Simplificado e Blindado
         document.getElementById('btn-entrar-login').onclick = function() {
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
@@ -292,7 +298,7 @@
                 document.getElementById('titulo-painel-dinamico').className = "titulo-manutencao";
                 document.getElementById('menu-operador-abas').classList.add('escondido');
                 document.getElementById('menu-manutencao-abas').classList.remove('escondido');
-                document.getElementById('link-manual-pdf').classList.add('escondido');
+                document.getElementById('link-manual-pdf').classList.add('escondido'); // Esconde da manutenção
                 alternarAba('dashboard');
             } else {
                 nivelAcesso = "operador";
@@ -300,7 +306,7 @@
                 document.getElementById('titulo-painel-dinamico').className = "titulo-operador";
                 document.getElementById('menu-manutencao-abas').classList.add('escondido');
                 document.getElementById('menu-operador-abas').classList.remove('escondido');
-                document.getElementById('link-manual-pdf').classList.remove('escondido');
+                document.getElementById('link-manual-pdf').classList.remove('escondido'); // Mostra para operador
                 alternarAba('chk');
                 montarPerguntas();
             }
@@ -401,6 +407,11 @@
                 const checkedEl = document.querySelector(`input[name="${p.id}"]:checked`);
                 const resp = checkedEl ? checkedEl.value : "N/A";
                 detalhes.push(`${p.id.toUpperCase()}(${resp})`);
+                
+                // Cálculo dinâmico para OEE com base em itens conformes
+                totalRespostasGlobais++;
+                if (resp === "OK") respostasOkGlobais++;
+
                 if(p.critico && resp === "NOK") travouMaquina = true;
             });
 
@@ -465,6 +476,12 @@
         function atualizarVisualizacaoLogs() {
             document.getElementById('ind-checklists').innerText = contagemChecklist;
             document.getElementById('ind-os').innerText = contagemOS;
+
+            // Atualiza indicador de OEE em tempo real
+            if(totalRespostasGlobais > 0) {
+                let taxaOee = Math.round((respostasOkGlobais / totalRespostasGlobais) * 100);
+                document.getElementById('ind-oee').innerText = taxaOee + "%";
+            }
 
             document.getElementById('lista-historico-local').innerHTML = logsSessao.filter(l => l.usuario === usuarioAtivo).map(log => `
                 <div class="os-status-item">
