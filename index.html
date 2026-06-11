@@ -1,535 +1,77 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHECKMANT - Tecfag Multimáquinas</title>
-    <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; min-height: 90vh; }
-        .container { width: 100%; max-width: 1400px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 15px; margin-bottom: 25px; }
-        .titulos h1 { margin: 0 0 5px 0; font-size: 26px; font-weight: 800; }
-        .titulos p { margin: 0; color: #94a3b8; font-size: 14px; }
-        #bloco-login { display: flex; justify-content: center; align-items: center; min-height: 75vh; }
-        .card-login { background-color: #1e293b; border: 1px solid #475569; border-radius: 16px; padding: 35px; width: 100%; max-width: 380px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
-        .card-login h2 { color: #34d399; margin: 0 0 5px 0; font-size: 32px; font-weight: 900; text-align: center; letter-spacing: 1px; }
-        .card-login p { color: #94a3b8; font-size: 13px; margin-bottom: 25px; text-align: center; }
-        .layout-abas { display: flex; flex-direction: column; gap: 20px; }
-        @media (min-width: 768px) { .layout-abas { flex-direction: row; } }
-        .menu-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 250px; }
-        .menu-item { background-color: #1e293b; border: 1px solid #475569; padding: 14px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; color: #cbd5e1; transition: all 0.2s ease; display: flex; align-items: center; justify-content: space-between; }
-        .menu-item:hover { background-color: #334155; color: #fff; transform: translateX(4px); }
-        .menu-item.ativo { background-color: #2563eb; border-color: #3b82f6; color: white; }
-        .conteudo-aba { flex: 1; }
-        .bloco { background-color: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); margin-bottom: 20px; }
-        .bloco h2 { margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid #475569; font-size: 20px; }
-        .area-rolavel-checklist { max-height: 48vh; overflow-y: auto; padding-right: 12px; margin-bottom: 15px; border: 1px solid #334155; background-color: #0f172a; border-radius: 8px; padding: 12px; }
-        .titulo-operador { color: #34d399; }
-        .titulo-manutencao { color: #f59e0b; }
-        .header-secao-checklist { background-color: #1e293b; color: #38bdf8; font-size: 11px; font-weight: bold; padding: 6px 10px; margin: 15px 0 6px 0; border-left: 3px solid #38bdf8; text-transform: uppercase; }
-        .pergunta-card { background-color: #1e293b; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; border: 1px solid #334155; gap: 15px; }
-        .critico { background-color: #451a03; border: 1px solid #854d0e; color: #fef08a; }
-        .pergunta-texto { flex: 1; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 11px; font-weight: bold; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; }
-        input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 9px; background-color: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #f8fafc; font-size: 13px; box-sizing: border-box; }
-        .opcoes-radio { display: flex; gap: 8px; }
-        .opcoes-radio label { display: flex; align-items: center; gap: 4px; background-color: #0f172a; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; border: 1px solid #334155; }
-        button, .btn-manual { width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; font-size: 14px; border: none; cursor: pointer; margin-bottom: 10px; display: block; text-align: center; box-sizing: border-box; text-decoration: none; }
-        .btn-azul { background-color: #2563eb; color: white; }
-        .btn-verde { background-color: #059669; color: white; }
-        .btn-laranja { background-color: #d97706; color: white; }
-        .btn-cinza { background-color: #475569; color: white; }
-        .btn-manual { background-color: #dc2626; color: white; margin-top: 0; display: inline-block; width: auto; }
-        .escondido { display: none !important; }
-        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative; }
-        
-        .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .card-indicador { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; text-align: center; }
-        .card-indicador h3 { margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase; }
-        .card-indicador p { margin: 0; font-size: 28px; font-weight: bold; }
-        .txt-verde { color: #10b981; }
-        .txt-laranja { color: #f59e0b; }
-        .txt-azul { color: #3b82f6; }
-        .txt-roxo { color: #a855f7; }
-        .tag-critica { position: absolute; top: 12px; right: 12px; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .tag-alta { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #b91c1c; }
-        .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
-        .tag-baixa { background-color: #14532d; color: #a7f3d0; border: 1px solid #15803d; }
-    </style>
-</head>
-<body>
+function atualizarVisualizacaoLogs() {
+    const totalChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST").length;
+    const totalOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO").length;
 
-    <div id="bloco-login">
-        <div class="card-login">
-            <h2>CHECKMANT</h2>
-            <p>Insira suas credenciais operacionais</p>
-            <form id="form-login">
-                <div class="form-group">
-                    <label>ID do Usuário / Login:</label>
-                    <input type="text" id="login-usuario" placeholder="Ex: op_1 ou manut_1" required autocomplete="off">
-                </div>
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label>Senha:</label>
-                    <input type="password" id="login-senha" placeholder="••••" required>
-                </div>
-                <button type="button" id="btn-entrar-login" class="btn-azul">Entrar no Sistema</button>
-            </form>
+    document.getElementById('ind-checklists').innerText = totalChecklists;
+    document.getElementById('ind-os').innerText = totalOS;
+
+    let totalRespostas = 0;
+    let respostasOk = 0;
+    logsSessao.filter(l => l.tipo === "CHECKLIST").forEach(log => {
+        if(log.detalhes && log.detalhes.toUpperCase().includes("OK")) {
+            respostasOk++;
+        }
+        totalRespostas++;
+    });
+    if(totalRespostas > 0) {
+        let taxa = Math.round((respostasOk / totalRespostas) * 100);
+        document.getElementById('ind-oee').innerText = taxa + "%";
+    }
+
+    const ultimaOS = logsSessao.find(l => l.tipo === "ORDEM DE SERVIÇO");
+    if(ultimaOS && ultimaOS.detalhes && ultimaOS.detalhes.toUpperCase().includes("ALTA")) {
+        document.getElementById('ind-status').innerText = "BLOQUEADA";
+        document.getElementById('ind-status').className = "txt-laranja";
+    } else {
+        document.getElementById('ind-status').innerText = "OPERANDO";
+        document.getElementById('ind-status').className = "txt-verde";
+    }
+
+    // Histórico Geral do Operador
+    document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
+        <div class="os-status-item">
+            <strong>${log.data} - ${log.tipo}</strong> (Por: ${log.usuario ? log.usuario.toUpperCase() : 'S/U'})<br>
+            <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes || ''}</p>
         </div>
-    </div>
+    `).join('');
 
-    <div id="bloco-sistema" class="container escondido">
-        <header>
-            <div class="titulos">
-                <h1 id="titulo-painel-dinamico">CHECKMANT - Painel de Fábrica</h1>
-                <p>Usuário ativo: <span id="user-display" style="font-weight:bold;"></span></p>
-            </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button onclick="carregarDadosDaNuvem()" class="btn-azul" style="width:auto; margin:0; padding:8px 15px; font-size:12px;">🔄 Sincronizar Nuvem</button>
-                <a id="link-manual-pdf" href="https://drive.google.com/open?id=1gfqVzkarCs9OvyImF73ZhPwKrr8yqAOB" target="_blank" class="btn-manual" style="padding:8px 15px; font-size:12px;">📕 Manual da Esteira (PDF) ↗</a>
-                <button id="btn-logout" class="btn-cinza" style="width:auto; margin:0; padding:8px 15px;">Sair</button>
-            </div>
-        </header>
-
-        <div class="layout-abas">
-            <ul class="menu-lista" id="menu-operador-abas">
-                <li class="menu-item ativo" onclick="alternarAba('chk')">📋 Checklist Diário</li>
-                <li class="menu-item" onclick="alternarAba('os')">🛠️ Abrir O.S. de Defeito</li>
-                <li class="menu-item" onclick="alternarAba('hist')">🕒 Histórico Geral da Máquina</li>
-            </ul>
-
-            <ul class="menu-lista escondido" id="menu-manutencao-abas">
-                <li class="menu-item ativo" onclick="alternarAba('dashboard')">📊 Indicadores / Painel</li>
-                <li class="menu-item" onclick="alternarAba('feed')">📥 Feed de Acompanhamento</li>
-                <li class="menu-item" onclick="alternarAba('backlog')">🗂️ Backlog de O.S.</li>
-                <li class="menu-item" onclick="alternarAba('config')">⚙️ Cadastros e Itens</li>
-            </ul>
-
-            <div class="conteudo-aba">
-                
-                <div id="aba-chk" class="bloco secao-conteudo">
-                    <h2 class="titulo-operador">📋 Checklist Operacional Diário</h2>
-                    <div class="form-group">
-                        <label>MÁQUINA DIRECIONADA:</label>
-                        <select id="seletor-equipamento-op"></select>
-                    </div>
-                    <form id="form-checklist">
-                        <div class="area-rolavel-checklist" id="container-perguntas"></div>
-                        <button type="submit" class="btn-verde">Enviar para a Nuvem</button>
-                    </form>
-                </div>
-
-                <div id="aba-os" class="bloco secao-conteudo escondido">
-                    <h2 style="color: #f59e0b;">🛠️ Abrir O.S. de Manutenção</h2>
-                    <form id="form-os">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="form-group">
-                                <label>Nome do Operador Solicitante:</label>
-                                <input type="text" id="os-nome-op" placeholder="Seu nome completo" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Turno de Trabalho:</label>
-                                <select id="os-turno-op">
-                                    <option value="1º Turno (Manhã)">1º Turno (Manhã)</option>
-                                    <option value="2º Turno (Tarde)">2º Turno (Tarde)</option>
-                                    <option value="3º Turno (Noite)">3º Turno (Noite)</option>
-                                    <option value="Administrativo / Geral">Administrativo / Geral</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Grau de Criticidade / Urgência:</label>
-                            <select id="os-criticidade" style="border-left: 4px solid #ef4444;" required>
-                                <option value="baixa">🟢 BAIXA (Reparo estético/preventivo)</option>
-                                <option value="media">🟡 MÉDIA (Máquina roda com restrição ou ruído)</option>
-                                <option value="alta">🔴 ALTA / CRÍTICA (Máquina parada ou risco!)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Descrição Detalhada do Defeito:</label>
-                            <textarea id="os-descricao" rows="4" placeholder="Descreva claramente o problema..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn-laranja">Emitir Ordem de Serviço</button>
-                    </form>
-                </div>
-
-                <div id="aba-hist" class="bloco secao-conteudo escondido">
-                    <h2 style="color: #60a5fa;">🕒 Histórico Unificado Nuvem</h2>
-                    <div id="lista-historico-local">
-                        <p style="color:#94a3b8; font-size:12px;">Sincronizando histórico da nuvem...</p>
-                    </div>
-                </div>
-
-                <div id="aba-dashboard" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📊 Indicadores de Performance e Status</h2>
-                    <div class="grid-indicadores">
-                        <div class="card-indicador">
-                            <h3>Status Global</h3>
-                            <p class="txt-verde" id="ind-status">OPERANDO</p>
-                        </div>
-                        <div class="card-indicador">
-                            <h3>OEE Estimado</h3>
-                            <p class="txt-roxo" id="ind-oee">100%</p>
-                        </div>
-                        <div class="card-indicador">
-                            <h3>Checklists Hoje</h3>
-                            <p class="txt-azul" id="ind-checklists">0</p>
-                        </div>
-                        <div class="card-indicador">
-                            <h3>O.S. Ativas</h3>
-                            <p class="txt-laranja" id="ind-os">0</p>
-                        </div>
-                    </div>
-                    <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
-                        <p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8;">Deseja ver o relatório completo diretamente no Google Sheets?</p>
-                        <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direto da Planilha de Dados ↗</a>
-                    </div>
-                </div>
-
-                <div id="aba-feed" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento (Todos os Aparelhos)</h2>
-                    <div id="lista-feed-manutencao">
-                        <p style="color:#94a3b8; font-size: 12px;">Carregando dados da nuvem...</p>
-                    </div>
-                </div>
-
-                <div id="aba-backlog" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">🗂️ Backlog Geral de Ordens de Serviço</h2>
-                    <div id="lista-backlog-manutencao">
-                        <p style="color:#94a3b8; font-size: 12px;">Carregando Ordens pendentes...</p>
-                    </div>
-                </div>
-
-                <div id="aba-config" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">⚙️ Painel de Engenharia (Cadastros)</h2>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div>
-                            <h4 style="margin: 0 0 10px 0; color:#38bdf8;">➕ Inserir Novo Equipamento</h4>
-                            <div class="form-group">
-                                <label>Nome / Modelo do Equipamento:</label>
-                                <input type="text" id="cfg-nova-maquina" placeholder="Ex: Seladora Tecfag TM400">
-                            </div>
-                            <button type="button" onclick="adicionarNovaMaquina()" class="btn-azul" style="padding:8px;">Adicionar na Lista</button>
-                        </div>
-                        <div>
-                            <h4 style="margin: 0 0 10px 0; color:#38bdf8;">📝 Criar Nova Pergunta de Checklist</h4>
-                            <div class="form-group">
-                                <label>Texto da Pergunta:</label>
-                                <input type="text" id="cfg-nova-pergunta" placeholder="Ex: Verificar nível de óleo">
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                                <div style="flex:1;">
-                                    <label>Setor:</label>
-                                    <select id="cfg-pergunta-secao">
-                                        <option value="SEGURANÇA (NR-12)">Segurança</option>
-                                        <option value="ESTRUTURA & ROLETES">Estrutura</option>
-                                        <option value="CORREIA (LONA)">Correia/Lona</option>
-                                        <option value="MOTORREDUTOR">Motor/Transmissão</option>
-                                        <option value="PAINEL ELÉTRICO">Elétrica</option>
-                                    </select>
-                                </div>
-                                <div style="flex:1;">
-                                    <label>Item Crítico?</label>
-                                    <select id="cfg-pergunta-critico">
-                                        <option value="nao">Não</option>
-                                        <option value="sim">Sim (Tranca máquina se der NOK)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="button" onclick="adicionarNovaPergunta()" class="btn-azul" style="padding:8px;">Inserir Pergunta</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+    // Feed de Acompanhamento da Manutenção
+    document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
+        <div class="os-status-item" style="border-left: 4px solid ${log.tipo && log.tipo.includes('ORDEM') ? '#f59e0b' : '#10b981'}">
+            <strong>${log.data} - ${log.tipo}</strong><br>
+            <span style="font-size:11px; color:#94a3b8;">Máquina: ${log.equipamento || ''} | Usuário: ${log.usuario ? log.usuario.toUpperCase() : 'S/U'}</span>
+            <p style="margin:5px 0 0 0; color:#e2e8f0; font-family: monospace; font-size:11px;">${log.detalhes || ''}</p>
         </div>
-    </div>
+    `).join('');
 
-    <script>
-        // LEMBRE-SE: Substitua esta URL pela sua URL atualizada do Apps Script (Web App)
-        const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxPeXxVKCDVSpQJ1gUg9tuDX0zRVfMU9SYdl5TGZ82naoGF-mnj2EvewndBY-WYQdds/exec";
-
-        let listaEquipamentos = ["Esteira Transportadora Tecfag RC1M/V90"];
-
-        let perguntasOficiais = [
-            { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções físicas fixas e móveis estão instaladas?", critico: false },
-            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência estão visíveis e respondendo?", critico: true },
-            { id: "p3", secao: "ESTRUTURA & ROLETES", texto: "Os roletes de tração e retorno giram livremente?", critico: false },
-            { id: "p4", secao: "ESTRUTURA & ROLETES", texto: "Alinhamento da estrutura metálica livre de impactos?", critico: false },
-            { id: "p5", secao: "CORREIA (LONA)", texto: "A lona/correia transportadora está centralizada?", critico: false },
-            { id: "p6", secao: "CORREIA (LONA)", texto: "A lona apresenta integridade física total?", critico: true },
-            { id: "p7", secao: "MOTORREDUTOR", texto: "Ausência de ruídos estridentes ou estalos?", critico: true },
-            { id: "p8", secao: "MOTORREDUTOR", texto: "O motor está livre de vazamentos visíveis?", critico: false },
-            { id: "p9", secao: "PAINEL ELÉTRICO", texto: "Chave liga/desliga externa e potenciômetro operam?", critico: true }
-        ];
-
-        let usuarioAtivo = "";
-        let nivelAcesso = ""; 
-        let logsSessao = [];
-
-        function atualizarSeletoresMaquinas() {
-            const selectOp = document.getElementById('seletor-equipamento-op');
-            if(selectOp) {
-                selectOp.innerHTML = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
-            }
-        }
-
-        // FUNÇÃO DE LEITURA BLINDADA POR JSONP CONTRA BLOQUEIO DE CORS
-        function carregarDadosDaNuvem() {
-            // Remove scripts antigos para não poluir o HTML
-            const scriptAntigo = document.getElementById('jsonp-script');
-            if (scriptAntigo) scriptAntigo.remove();
-
-            // Cria um elemento de script dinâmico que ignora as restrições normais de CORS
-            const script = document.createElement('script');
-            script.id = 'jsonp-script';
-            script.src = URL_GOOGLE_SCRIPT + "?callback=processarRetornoNuvem&t=" + new Date().getTime();
-            document.body.appendChild(script);
-        }
-
-        // Função global executada quando o Google responde
-        window.processarRetornoNuvem = function(dados) {
-            if (Array.isArray(dados)) {
-                logsSessao = dados;
-                atualizarVisualizacaoLogs();
-            }
-        };
-
-        document.getElementById('btn-entrar-login').onclick = function() {
-            const user = document.getElementById('login-usuario').value.trim().toLowerCase();
-            const senha = document.getElementById('login-senha').value;
+    // CORREÇÃO DO BACKLOG DA MANUTENÇÃO (Busca sem distinção de maiúsculas/minúsculas)
+    const apenasOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
+    if(apenasOS.length === 0) {
+        document.getElementById('lista-backlog-manutencao').innerHTML = `<p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente.</p>`;
+    } else {
+        document.getElementById('lista-backlog-manutencao').innerHTML = apenasOS.map(log => {
+            let criticidadeTag = "tag-baixa";
+            let critTxt = "baixa";
             
-            if (!user) return alert("Por favor, digite o seu usuário.");
-            if (senha !== "0000" && senha !== "1234") return alert("Senha incorreta.");
-
-            if (user.startsWith('manut')) {
-                nivelAcesso = "manutencao";
-                document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Engenharia de Manutenção";
-                document.getElementById('titulo-painel-dinamico').className = "titulo-manutencao";
-                document.getElementById('menu-operador-abas').classList.add('escondido');
-                document.getElementById('menu-manutencao-abas').classList.remove('escondido');
-                document.getElementById('link-manual-pdf').classList.add('escondido');
-                alternarAba('dashboard');
-            } else {
-                nivelAcesso = "operador";
-                document.getElementById('titulo-painel-dinamico').innerText = "CHECKMANT - Painel de Fábrica";
-                document.getElementById('titulo-painel-dinamico').className = "titulo-operador";
-                document.getElementById('menu-manutencao-abas').classList.add('escondido');
-                document.getElementById('menu-operador-abas').classList.remove('escondido');
-                document.getElementById('link-manual-pdf').classList.remove('escondido');
-                alternarAba('chk');
-                montarPerguntas();
-            }
-
-            usuarioAtivo = user;
-            document.getElementById('user-display').innerText = user.toUpperCase();
-            document.getElementById('bloco-login').classList.add('escondido');
-            document.getElementById('bloco-sistema').classList.remove('escondido');
-            atualizarSeletoresMaquinas();
-            carregarDadosDaNuvem(); 
-        };
-
-        document.getElementById('btn-logout').onclick = function() {
-            document.getElementById('bloco-sistema').classList.add('escondido');
-            document.getElementById('bloco-login').classList.remove('escondido');
-            document.getElementById('form-login').reset();
-        };
-
-        function montarPerguntas() {
-            const container = document.getElementById('container-perguntas');
-            let html = "";
-            let secaoAtual = "";
+            // Transforma o texto em maiúsculo temporariamente apenas para testar a palavra
+            const detalhesMaiusculo = log.detalhes ? log.detalhes.toUpperCase() : "";
             
-            perguntasOficiais.forEach(p => {
-                if(p.secao !== secaoAtual) {
-                    secaoAtual = p.secao;
-                    html += `<div class="header-secao-checklist">${secaoAtual}</div>`;
-                }
-                html += `
-                    <div class="pergunta-card ${p.critico ? 'critico' : ''}">
-                        <span class="pergunta-texto">${p.texto} ${p.critico ? '<b style="color:#ef4444;">(*)</b>' : ''}</span>
-                        <div class="opcoes-radio">
-                            <label><input type="radio" name="${p.id}" value="OK" required> OK</label>
-                            <label><input type="radio" name="${p.id}" value="NOK"> NOK</label>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function alternarAba(abaId) {
-            document.querySelectorAll('.secao-conteudo').forEach(bloco => bloco.classList.add('escondido'));
-            const abaAlvo = document.getElementById(`aba-${abaId}`);
-            if(abaAlvo) abaAlvo.classList.remove('escondido');
-            
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('ativo'));
-            document.querySelectorAll('.menu-item').forEach(item => {
-                if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${abaId}'`)) {
-                    item.classList.add('ativo');
-                }
-            });
-        }
-
-        function adicionarNovaMaquina() {
-            const nome = document.getElementById('cfg-nova-maquina').value.trim();
-            if(!nome) return alert("Digite o nome do equipamento!");
-            listaEquipamentos.push(nome);
-            atualizarSeletoresMaquinas();
-            alert(`✅ Equipamento "${nome}" adicionado!`);
-            document.getElementById('cfg-nova-maquina').value = "";
-        }
-
-        function adicionarNovaPergunta() {
-            const texto = document.getElementById('cfg-nova-pergunta').value.trim();
-            const secao = document.getElementById('cfg-pergunta-secao').value;
-            const ehCritico = document.getElementById('cfg-pergunta-critico').value === "sim";
-            if(!texto) return alert("Digite o texto da pergunta!");
-            const novoId = "p" + (perguntasOficiais.length + 1);
-            perguntasOficiais.push({ id: novoId, secao: secao, texto: texto, critico: ehCritico });
-            alert("✅ Pergunta adicionada!");
-            document.getElementById('cfg-nova-pergunta').value = "";
-        }
-
-        async function enviarParaNuvem(dados) {
-            try {
-                await fetch(URL_GOOGLE_SCRIPT, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
-                });
-                return true;
-            } catch (e) {
-                console.error(e);
-                return false;
+            if(detalhesMaiusculo.includes("ALTA") || detalhesMaiusculo.includes("CRÍTICA") || detalhesMaiusculo.includes("CRITICA")) { 
+                criticidadeTag = "tag-alta"; 
+                critTxt = "alta"; 
             }
-        }
-
-        document.getElementById('form-checklist').onsubmit = async function(e) {
-            e.preventDefault();
-            let detalhes = [];
-            let travouMaquina = false;
-
-            perguntasOficiais.forEach(p => {
-                const checkedEl = document.querySelector(`input[name="${p.id}"]:checked`);
-                const resp = checkedEl ? checkedEl.value : "N/A";
-                detalhes.push(`${p.id.toUpperCase()}(${resp})`);
-                if(p.critico && resp === "NOK") travouMaquina = true;
-            });
-
-            const payload = {
-                data: new Date().toLocaleString('pt-BR'),
-                usuario: usuarioAtivo,
-                equipamento: document.getElementById('seletor-equipamento-op').value,
-                tipo: "CHECKLIST",
-                detalhes: (travouMaquina ? "[🚨 CRÍTICO REPROVADO] " : "[✅ APROVADO] ") + detalhes.join(' | ')
-            };
-
-            alert("Transmitindo respostas do Checklist para a planilha Google...");
-            await enviarParaNuvem(payload);
-            
-            setTimeout(carregarDadosDaNuvem, 2000);
-
-            if(travouMaquina) {
-                alert("🚨 ALERTA CRÍTICO: Item reprovado! Equipamento parado.");
-            } else {
-                alert("✅ Checklist enviado!");
+            else if(detalhesMaiusculo.includes("MEDIA") || detalhesMaiusculo.includes("MÉDIA")) { 
+                criticidadeTag = "tag-media"; 
+                critTxt = "média"; 
             }
-            document.getElementById('form-checklist').reset();
-        };
-
-        document.getElementById('form-os').onsubmit = async function(e) {
-            e.preventDefault();
-            const nomeOp = document.getElementById('os-nome-op').value.trim();
-            const turnoOp = document.getElementById('os-turno-op').value;
-            const criticidade = document.getElementById('os-criticidade').value;
-            const descricao = document.getElementById('os-descricao').value.trim();
-            const maquina = document.getElementById('seletor-equipamento-op').value;
-
-            const payload = {
-                data: new Date().toLocaleString('pt-BR'),
-                usuario: usuarioAtivo,
-                equipamento: maquina,
-                tipo: "ORDEM DE SERVIÇO",
-                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${nomeOp} (${turnoOp}) | Defeito: ${descricao}`
-            };
-
-            alert("Registrando O.S. no Backlog...");
-            await enviarParaNuvem(payload);
             
-            setTimeout(carregarDadosDaNuvem, 2000);
-            
-            alert("🛠️ O.S. emitida!");
-            document.getElementById('form-os').reset();
-            document.getElementById('os-nome-op').value = "";
-            alternarAba('hist');
-        };
-
-        function atualizarVisualizacaoLogs() {
-            const totalChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST").length;
-            const totalOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO").length;
-
-            document.getElementById('ind-checklists').innerText = totalChecklists;
-            document.getElementById('ind-os').innerText = totalOS;
-
-            let totalRespostas = 0;
-            let respostasOk = 0;
-            logsSessao.filter(l => l.tipo === "CHECKLIST").forEach(log => {
-                if(log.detalhes.includes("OK")) {
-                    respostasOk++;
-                }
-                totalRespostas++;
-            });
-            if(totalRespostas > 0) {
-                let taxa = Math.round((respostasOk / totalRespostas) * 100);
-                document.getElementById('ind-oee').innerText = taxa + "%";
-            }
-
-            const ultimaOS = logsSessao.find(l => l.tipo === "ORDEM DE SERVIÇO");
-            if(ultimaOS && ultimaOS.detalhes.includes("CRITICIDADE: ALTA")) {
-                document.getElementById('ind-status').innerText = "BLOQUEADA";
-                document.getElementById('ind-status').className = "txt-laranja";
-            } else {
-                document.getElementById('ind-status').innerText = "OPERANDO";
-                document.getElementById('ind-status').className = "txt-verde";
-            }
-
-            document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
-                <div class="os-status-item">
-                    <strong>${log.data} - ${log.tipo}</strong> (Por: ${log.usuario.toUpperCase()})<br>
-                    <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
+            return `
+                <div class="os-status-item" style="border-left: 4px solid #f59e0b; padding-right: 70px;">
+                    <span class="tag-critica ${criticidadeTag}">${critTxt}</span>
+                    <strong>${log.data} - ${log.equipamento || 'Máquina Geral'}</strong><br>
+                    <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes || ''}</p>
                 </div>
-            `).join('');
-
-            document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
-                <div class="os-status-item" style="border-left: 4px solid ${log.tipo.includes('ORDEM') ? '#f59e0b' : '#10b981'}">
-                    <strong>${log.data} - ${log.tipo}</strong><br>
-                    <span style="font-size:11px; color:#94a3b8;">Máquina: ${log.equipamento} | Usuário: ${log.usuario.toUpperCase()}</span>
-                    <p style="margin:5px 0 0 0; color:#e2e8f0; font-family: monospace; font-size:11px;">${log.detalhes}</p>
-                </div>
-            `).join('');
-
-            const apenasOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
-            if(apenasOS.length === 0) {
-                document.getElementById('lista-backlog-manutencao').innerHTML = `<p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente.</p>`;
-            } else {
-                document.getElementById('lista-backlog-manutencao').innerHTML = apenasOS.map(log => {
-                    let criticidadeTag = "tag-baixa";
-                    let critTxt = "baixa";
-                    if(log.detalhes.includes("CRITICIDADE: ALTA")) { criticidadeTag = "tag-alta"; critTxt = "alta"; }
-                    else if(log.detalhes.includes("CRITICIDADE: MEDIA")) { criticidadeTag = "tag-media"; critTxt = "média"; }
-                    
-                    return `
-                        <div class="os-status-item" style="border-left: 4px solid #f59e0b; padding-right: 70px;">
-                            <span class="tag-critica ${criticidadeTag}">${critTxt}</span>
-                            <strong>${log.data} - ${log.equipamento}</strong><br>
-                            <p style="margin:5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-    </script>
-</body>
-</html>
+            `;
+        }).join('');
+    }
+}
