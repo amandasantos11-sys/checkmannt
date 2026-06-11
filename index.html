@@ -182,12 +182,12 @@
                     </div>
                     <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
                         <p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8;">Deseja ver o relatório completo diretamente no Google Sheets?</p>
-                        <a href="https://script.google.com/macros/library/d/1TaTXolUfq9LsxK8Aj0g7xO0NesqDSAUtpPI3oqlfzKIRIWrfjySpr-QX/4" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direto da Planilha de Dados ↗</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1S0yBYpeGYiwjixcJZkP7oHKQB3ce8waEgvURIdirHkA/edit?usp=sharing" target="_blank" style="color: #34d399; font-weight: bold; text-decoration: none;">Link Direto da Planilha de Dados ↗</a>
                     </div>
                 </div>
 
                 <div id="aba-feed" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento </h2>
+                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento (Todos os Aparelhos)</h2>
                     <div id="lista-feed-manutencao">
                         <p style="color:#94a3b8; font-size: 12px;">Carregando dados da nuvem...</p>
                     </div>
@@ -221,7 +221,7 @@
                                 <div style="flex:1;">
                                     <label>Setor:</label>
                                     <select id="cfg-pergunta-secao">
-                                        <option value="SEGURANÇA (NR-12)">Securança</option>
+                                        <option value="SEGURANÇA (NR-12)">Segurança</option>
                                         <option value="ESTRUTURA & ROLETES">Estrutura</option>
                                         <option value="CORREIA (LONA)">Correia/Lona</option>
                                         <option value="MOTORREDUTOR">Motor/Transmissão</option>
@@ -246,6 +246,7 @@
     </div>
 
     <script>
+        // LEMBRE-SE: Substitua esta URL pela sua URL atualizada do Apps Script (Web App)
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxPeXxVKCDVSpQJ1gUg9tuDX0zRVfMU9SYdl5TGZ82naoGF-mnj2EvewndBY-WYQdds/exec";
 
         let listaEquipamentos = ["Esteira Transportadora Tecfag RC1M/V90"];
@@ -273,19 +274,26 @@
             }
         }
 
-        // BUSCA INTEGRADA DIRETO DO GOOGLE SHEETS
-        async function carregarDadosDaNuvem() {
-            try {
-                const resposta = await fetch(URL_GOOGLE_SCRIPT);
-                const dados = await resposta.json();
-                if (Array.isArray(dados) && dados.length > 0) {
-                    logsSessao = dados;
-                    atualizarVisualizacaoLogs();
-                }
-            } catch (e) {
-                console.log("Aguardando novas linhas da planilha...");
-            }
+        // FUNÇÃO DE LEITURA BLINDADA POR JSONP CONTRA BLOQUEIO DE CORS
+        function carregarDadosDaNuvem() {
+            // Remove scripts antigos para não poluir o HTML
+            const scriptAntigo = document.getElementById('jsonp-script');
+            if (scriptAntigo) scriptAntigo.remove();
+
+            // Cria um elemento de script dinâmico que ignora as restrições normais de CORS
+            const script = document.createElement('script');
+            script.id = 'jsonp-script';
+            script.src = URL_GOOGLE_SCRIPT + "?callback=processarRetornoNuvem&t=" + new Date().getTime();
+            document.body.appendChild(script);
         }
+
+        // Função global executada quando o Google responde
+        window.processarRetornoNuvem = function(dados) {
+            if (Array.isArray(dados)) {
+                logsSessao = dados;
+                atualizarVisualizacaoLogs();
+            }
+        };
 
         document.getElementById('btn-entrar-login').onclick = function() {
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
@@ -318,7 +326,7 @@
             document.getElementById('bloco-login').classList.add('escondido');
             document.getElementById('bloco-sistema').classList.remove('escondido');
             atualizarSeletoresMaquinas();
-            carregarDadosDaNuvem(); // Puxa os dados assim que faz login
+            carregarDadosDaNuvem(); 
         };
 
         document.getElementById('btn-logout').onclick = function() {
@@ -421,9 +429,7 @@
             alert("Transmitindo respostas do Checklist para a planilha Google...");
             await enviarParaNuvem(payload);
             
-            // Adiciona localmente e sincroniza
-            logsSessao.unshift(payload);
-            setTimeout(carregarDadosDaNuvem, 1500);
+            setTimeout(carregarDadosDaNuvem, 2000);
 
             if(travouMaquina) {
                 alert("🚨 ALERTA CRÍTICO: Item reprovado! Equipamento parado.");
@@ -452,8 +458,7 @@
             alert("Registrando O.S. no Backlog...");
             await enviarParaNuvem(payload);
             
-            logsSessao.unshift(payload);
-            setTimeout(carregarDadosDaNuvem, 1500);
+            setTimeout(carregarDadosDaNuvem, 2000);
             
             alert("🛠️ O.S. emitida!");
             document.getElementById('form-os').reset();
@@ -462,14 +467,12 @@
         };
 
         function atualizarVisualizacaoLogs() {
-            // Filtros de contagem dinâmicos vindos da Nuvem
             const totalChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST").length;
             const totalOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO").length;
 
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
-            // Cálculo OEE Real da planilha
             let totalRespostas = 0;
             let respostasOk = 0;
             logsSessao.filter(l => l.tipo === "CHECKLIST").forEach(log => {
@@ -483,7 +486,6 @@
                 document.getElementById('ind-oee').innerText = taxa + "%";
             }
 
-            // Status baseado na última O.S.
             const ultimaOS = logsSessao.find(l => l.tipo === "ORDEM DE SERVIÇO");
             if(ultimaOS && ultimaOS.detalhes.includes("CRITICIDADE: ALTA")) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
@@ -493,7 +495,6 @@
                 document.getElementById('ind-status').className = "txt-verde";
             }
 
-            // Histórico na visão do operador (Geral de todos os envios da máquina)
             document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
                 <div class="os-status-item">
                     <strong>${log.data} - ${log.tipo}</strong> (Por: ${log.usuario.toUpperCase()})<br>
@@ -501,7 +502,6 @@
                 </div>
             `).join('');
 
-            // Feed da Manutenção
             document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
                 <div class="os-status-item" style="border-left: 4px solid ${log.tipo.includes('ORDEM') ? '#f59e0b' : '#10b981'}">
                     <strong>${log.data} - ${log.tipo}</strong><br>
@@ -510,7 +510,6 @@
                 </div>
             `).join('');
 
-            // Backlog da Manutenção
             const apenasOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
             if(apenasOS.length === 0) {
                 document.getElementById('lista-backlog-manutencao').innerHTML = `<p style="color:#94a3b8; font-size: 12px;">Nenhuma O.S. pendente.</p>`;
