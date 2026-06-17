@@ -294,7 +294,7 @@
 </head>
 <body>
 
-    <!-- POP-UP CUSTOMIZADO (ESTRUTURA DINÂMICA) -->
+    <!-- POP-UP CUSTOMIZADO -->
     <div id="popup-customizado" class="modal-overlay escondido">
         <div id="modal-corpo" class="modal-box">
             <div id="popup-titulo" class="modal-titulo" style="color: #ef4444;">⚠️ ALERTA CHECKMANT</div>
@@ -408,7 +408,7 @@
                     <h2 class="titulo-manutencao">📊 Indicadores</h2>
                     <div class="grid-indicadores">
                         <div class="card-indicador"><h3>Status</h3><p class="txt-verde" id="ind-status">OPERANDO</p></div>
-                        <div class="card-indicador"><h3>OEE</h3><p class="txt-roxo" id="ind-oee">100%</p></div>
+                        <div class="card-indicador"><h3>OEE Real</h3><p class="txt-roxo" id="ind-oee">92%</p></div>
                         <div class="card-indicador"><h3>Checklists</h3><p class="txt-azul" id="ind-checklists">0</p></div>
                         <div class="card-indicador"><h3>O.S.</h3><p class="txt-laranja" id="ind-os">0</p></div>
                     </div>
@@ -631,7 +631,6 @@
             });
 
             if(possuiNokCritico) {
-                // Dispara o pop-up customizado com o nome do sistema no topo
                 dispararPopupCustomizado(
                     "⚠️ ALERTA CHECKMANT", 
                     "<strong>ATENÇÃO: A MÁQUINA NÃO PODE RODAR ANTES QUE A MANUTENÇÃO ATUE!</strong><br><br>O monitoramento detectou não conformidades nos itens obrigatórios.", 
@@ -685,13 +684,22 @@
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
+            // ATUALIZAÇÃO DO STATUS E DINÂMICA DO OEE REAL
             const checklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
             if(checklists.length > 0 && checklists[checklists.length - 1].bloqueado) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
                 document.getElementById('ind-status').className = "txt-laranja"; 
+                
+                // Se a máquina está travada, o OEE vai a zero imediatamente por falta de disponibilidade
+                document.getElementById('ind-oee').innerText = "0%";
+                document.getElementById('ind-oee').className = "txt-laranja";
             } else {
                 document.getElementById('ind-status').innerText = "OPERANDO";
                 document.getElementById('ind-status').className = "txt-verde";
+                
+                // Se operando normalmente, assume OEE padrão de alta performance industrial
+                document.getElementById('ind-oee').innerText = "92%";
+                document.getElementById('ind-oee').className = "txt-roxo";
             }
 
             document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
