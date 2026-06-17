@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -225,9 +225,25 @@
             border: 1px solid #334155;
             color: #cbd5e1;
         }
+
+        .sub-bloco-cadastro {
+            background-color: #111827;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .sub-bloco-cadastro h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 6px;
+        }
         
         /* Botões Estilizados */
-        button {
+        button, .btn-link-manual {
             width: 100%;
             padding: 12px;
             font-weight: bold;
@@ -239,11 +255,13 @@
             display: block;
             box-sizing: border-box;
             text-align: center;
+            text-decoration: none;
         }
         .btn-azul { background-color: #2563eb; color: white; }
         .btn-verde { background-color: #059669; color: white; }
         .btn-laranja { background-color: #d97706; color: white; }
         .btn-cinza { background-color: #475569; color: white; }
+        .btn-roxo-manual { background-color: #7c3aed; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         
         /* Ocultor de telas */
         .escondido { display: none !important; }
@@ -392,11 +410,18 @@
                 
                 <div id="aba-op-chk" class="bloco">
                     <h2 class="titulo-checklist">📋 Checklist Operacional Diário</h2>
-                    <div class="form-group" style="margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 8px;">
-                        <label style="color: #34d399;">MÁQUINA DIRECIONADA:</label>
-                        <select id="operador-seletor-equipamento" style="border-color: #34d399; font-weight: bold; color: #34d399;">
-                        </select>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+                        <div class="form-group" style="margin: 0; flex: 1;">
+                            <label style="color: #34d399;">MÁQUINA DIRECIONADA:</label>
+                            <select id="operador-seletor-equipamento" onchange="atualizarLinkManualManual('operador-seletor-equipamento', 'btn-manual-pdf')" style="border-color: #34d399; font-weight: bold; color: #34d399;">
+                            </select>
+                        </div>
+                        <a id="btn-manual-pdf" href="#" target="_blank" class="btn-link-manual btn-roxo-manual">
+                            📖 Abrir Manual Técnico da Máquina (PDF)
+                        </a>
                     </div>
+
                     <form id="form-checklist" onsubmit="validarChecklist(event)">
                         <div class="area-rolavel-checklist" id="container-perguntas-checklist"></div>
                         <button type="submit" class="btn-verde">Enviar Checklist do Equipamento</button>
@@ -449,11 +474,68 @@
 
                 <div id="aba-eng-dash" class="bloco escondido">
                     <h2 class="titulo-manutencao">📊 Painel de Indicadores Industriais</h2>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+                        <div class="form-group" style="margin: 0; flex: 1;">
+                            <label style="color: #a855f7;">EQUIPAMENTO SELECIONADO:</label>
+                            <select id="manutencao-seletor-equipamento" onchange="atualizarLinkManualManual('manutencao-seletor-equipamento', 'btn-manual-pdf-eng')" style="border-color: #a855f7; font-weight: bold; color: #a855f7;">
+                            </select>
+                        </div>
+                        <a id="btn-manual-pdf-eng" href="#" target="_blank" class="btn-link-manual btn-roxo-manual">
+                            📖 Abrir Manual Técnico da Máquina (PDF)
+                        </a>
+                    </div>
+
                     <div class="grid-indicadores">
                         <div class="card-indicador"><h3>Status Atual</h3><p class="txt-verde" id="ind-status">OPERANDO</p></div>
                         <div class="card-indicador"><h3>OEE Real</h3><p class="txt-roxo" id="ind-oee">92%</p></div>
                         <div class="card-indicador"><h3>Checklists</h3><p class="txt-azul" id="ind-checklists">0</p></div>
                         <div class="card-indicador"><h3>O.S. Criadas</h3><p class="txt-laranja" id="ind-os">0</p></div>
+                    </div>
+
+                    <h2 class="titulo-manutencao" style="margin-top: 40px;">⚙️ Engenharia - Configurações do Sistema</h2>
+                    
+                    <div class="sub-bloco-cadastro">
+                        <h3>➕ Cadastrar Novo Equipamento</h3>
+                        <form id="form-add-maquina" onsubmit="cadastrarEquipamento(event)">
+                            <div class="form-group">
+                                <label>Nome Exato da Máquina:</label>
+                                <input type="text" id="add-maquina-nome" placeholder="Ex: Seladora Automática Continuous" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Link Direto do PDF do Manual:</label>
+                                <input type="text" id="add-maquina-pdf" placeholder="https://..." required autocomplete="off">
+                            </div>
+                            <button type="submit" class="btn-azul" style="padding: 8px; font-size:12px;">Salvar Máquina no Banco</button>
+                        </form>
+                    </div>
+
+                    <div class="sub-bloco-cadastro">
+                        <h3>➕ Cadastrar Nova Pergunta no Checklist</h3>
+                        <form id="form-add-pergunta" onsubmit="cadastrarPergunta(event)">
+                            <div class="form-group">
+                                <label>Texto da Pergunta:</label>
+                                <input type="text" id="add-pergunta-texto" placeholder="Ex: Verificar vazamento de óleo no cilindro principal..." required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Seção do Checklist:</label>
+                                <select id="add-pergunta-secao" required>
+                                    <option value="SEGURANÇA (NR-12)">SEGURANÇA (NR-12)</option>
+                                    <option value="ESTRUTURA E ALINHAMENTO">ESTRUTURA E ALINHAMENTO</option>
+                                    <option value="CORREIA / COMPONENTES">CORREIA / COMPONENTES</option>
+                                    <option value="ACIONAMENTO E TRANSMISSÃO">ACIONAMENTO E TRANSMISSÃO</option>
+                                    <option value="SISTEMA ELÉTRICO E CONTROLE">SISTEMA ELÉTRICO E CONTROLE</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Item:</label>
+                                <select id="add-pergunta-critico" required>
+                                    <option value="nao">🟢 Item Normal (Informativo)</option>
+                                    <option value="sim">🔴 Item Crítico (Bloqueante / Para Máquina)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-azul" style="padding: 8px; font-size:12px;">Injetar Pergunta no Checklist</button>
+                        </form>
                     </div>
                 </div>
 
@@ -485,37 +567,31 @@
     </div>
 
     <script>
+        // Inicialização do Banco local armazenado no navegador
         let logsSessao = JSON.parse(localStorage.getItem('checkmant_logs')) || [];
         
-        let listaEquipamentos = [
-            "Esteira Transportadora Tecfag RC1M/V90",
-            "Seladora Automática Continuous Band Sealer",
-            "Injetora de Plásticos Multicavidades Premium"
+        let listaEquipamentos = JSON.parse(localStorage.getItem('checkmant_maquinas')) || [
+            "Esteira Transportadora Tecfag RC1M/V90"
         ];
+
+        let manuaisPDF = JSON.parse(localStorage.getItem('checkmant_pdf_links')) || {
+            "Esteira Transportadora Tecfag RC1M/V90": "https://grupo.tecfag.com.br/wp-content/uploads/2020/03/manual-tecfag-esteira-com-ajuste-de-90o-rc1mv90.pdf"
+        };
         
-        let perguntasBancoGlobal = [
-            // SEÇÃO 1: SEGURANÇA (NR-12)
+        let perguntasBancoGlobal = JSON.parse(localStorage.getItem('checkmant_perguntas')) || [
             { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções e barreiras mecânicas de segurança estão no lugar e fixadas?", critico: false },
             { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e chaves de segurança respondem ao teste?", critico: true },
             { id: "p3", secao: "SEGURANÇA (NR-12)", texto: "Sensores de intertravamento interrompem o ciclo quando violados?", critico: true },
             { id: "p4", secao: "SEGURANÇA (NR-12)", texto: "Sinalização visual de advertência e placas estão legíveis?", critico: false },
-
-            // SEÇÃO 2: ESTRUTURA E ALINHAMENTO
             { id: "p5", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura do chassi apresenta ausência de trincas mecânicas ou fadiga?", critico: false },
             { id: "p6", secao: "ESTRUTURA E ALINHAMENTO", texto: "Alinhamento das guias laterais e roletes está centralizado?", critico: false },
-            { id: "p7", secao: "ESTRUTURA E ALINHAMENTO", texto: "Elements de fixação (parafusos/porcas) estão devidamente apertados?", critico: false },
-
-            // SEÇÃO 3: CORREIA / COMPONENTES
+            { id: "p7", secao: "ESTRUTURA E ALINHAMENTO", texto: "Elementos de fixação (parafusos/porcas) estão devidamente apertados?", critico: false },
             { id: "p8", secao: "CORREIA / COMPONENTES", texto: "Lona/Correia opera livre de cortes severos ou rasgos iminentes?", critico: true },
             { id: "p9", secao: "CORREIA / COMPONENTES", texto: "Tensão da correia está regulada (sem patinar nos tambores)?", critico: false },
             { id: "p10", secao: "CORREIA / COMPONENTES", texto: "Os roletes de carga e retorno giram livremente sem travamento?", critico: false },
-
-            // SEÇÃO 4: ACIONAMENTO E TRANSMISSÃO
             { id: "p11", secao: "ACIONAMENTO E TRANSMISSÃO", texto: "Motor e redutor operam em temperatura normal e livres de ruídos anormais?", critico: true },
             { id: "p12", secao: "ACIONAMENTO E TRANSMISSÃO", texto: "Nível de óleo lubrificante do redutor está na faixa operacional?", critico: false },
             { id: "p13", secao: "ACIONAMENTO E TRANSMISSÃO", texto: "Acoplamentos, polias ou correntes de transmissão estão alinhados e sem folgas?", critico: false },
-
-            // SEÇÃO 5: SISTEMA ELÉTRICO E CONTROLE
             { id: "p14", secao: "SISTEMA ELÉTRICO E CONTROLE", texto: "Painel de comando elétrico limpo, fechado e com cabos intactos?", critico: false },
             { id: "p15", secao: "SISTEMA ELÉTRICO E CONTROLE", texto: "Inversor de frequência / IHM operacional e sem alertas ativos?", critico: false },
             { id: "p16", secao: "SISTEMA ELÉTRICO E CONTROLE", texto: "Sensores de presença / fim de curso limpos e detectando corretamente?", critico: false }
@@ -524,20 +600,73 @@
         function atualizarSeletores() {
             const htmlOpcoes = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
             document.getElementById('operador-seletor-equipamento').innerHTML = htmlOpcoes;
+            document.getElementById('manutencao-seletor-equipamento').innerHTML = htmlOpcoes;
             document.getElementById('os-equipamento').innerHTML = htmlOpcoes;
+
+            atualizarLinkManualManual('operador-seletor-equipamento', 'btn-manual-pdf');
+            atualizarLinkManualManual('manutencao-seletor-equipamento', 'btn-manual-pdf-eng');
+        }
+
+        function atualizarLinkManualManual(idSeletor, idBotao) {
+            const seletor = document.getElementById(idSeletor);
+            if (!seletor) return;
+            const maquina = seletor.value;
+            const link = manuaisPDF[maquina] || "#";
+            document.getElementById(idBotao).setAttribute('href', link);
+        }
+
+        // Funções de Cadastro da Engenharia
+        function cadastrarEquipamento(event) {
+            event.preventDefault();
+            const nome = document.getElementById('add-maquina-nome').value.trim();
+            const pdf = document.getElementById('add-maquina-pdf').value.trim();
+
+            if(listaEquipamentos.includes(nome)) {
+                alert("Esta máquina já está mapeada no sistema!");
+                return;
+            }
+
+            listaEquipamentos.push(nome);
+            manuaisPDF[nome] = pdf;
+
+            localStorage.setItem('checkmant_maquinas', JSON.stringify(listaEquipamentos));
+            localStorage.setItem('checkmant_pdf_links', JSON.stringify(manuaisPDF));
+
+            alert(`Equipamento "${nome}" injetado com sucesso!`);
+            document.getElementById('form-add-maquina').reset();
+            atualizarSeletores();
+        }
+
+        function cadastrarPergunta(event) {
+            event.preventDefault();
+            const texto = document.getElementById('add-pergunta-texto').value.trim();
+            const secao = document.getElementById('add-pergunta-secao').value;
+            const critico = document.getElementById('add-pergunta-critico').value === 'sim';
+            const novoId = "p_" + Date.now();
+
+            perguntasBancoGlobal.push({
+                id: novoId,
+                secao: secao,
+                texto: texto,
+                critico: critico
+            });
+
+            localStorage.setItem('checkmant_perguntas', JSON.stringify(perguntasBancoGlobal));
+            
+            alert("Nova validação inserida na matriz do checklist operacional!");
+            document.getElementById('form-add-pergunta').reset();
+            montarChecklistNaTelaDoOperador();
         }
 
         function autenticarUsuario() {
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
 
-            // Validação inteligente e restrita por tipo de perfil profissional
             if (user.startsWith('eng') || user.startsWith('manut')) {
                 if (senha !== "1234") {
                     alert("Acesso Negado: Senha inválida para Engenharia/Manutenção.");
                     return;
                 }
-                // Se correto, libera painel da Engenharia
                 document.getElementById('bloco-login').classList.add('escondido');
                 document.getElementById('bloco-operador').classList.remove('escondido');
                 document.getElementById('user-display').innerText = user.toUpperCase();
@@ -549,7 +678,6 @@
                     alert("Acesso Negado: Senha inválida para Operadores.");
                     return;
                 }
-                // Se correto, libera painel do Operador
                 document.getElementById('bloco-login').classList.add('escondido');
                 document.getElementById('bloco-operador').classList.remove('escondido');
                 document.getElementById('user-display').innerText = user.toUpperCase();
@@ -591,7 +719,10 @@
             let html = "";
             let secaoAtual = "";
             
-            perguntasBancoGlobal.forEach(p => {
+            // Ordena as perguntas por seção para garantir agrupamento correto na visualização
+            let perguntasOrdenadas = [...perguntasBancoGlobal].sort((a,b) => a.secao.localeCompare(b.secao));
+
+            perguntasOrdenadas.forEach(p => {
                 if (p.secao !== secaoAtual) {
                     secaoAtual = p.secao;
                     html += `<div class="header-secao-checklist">${secaoAtual}</div>`;
@@ -720,9 +851,9 @@
             document.getElementById('ind-os').innerText = totalOS;
 
             const todosOsChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
-            const ultimaCondicaoBloqueada = todosOsChecklists.length > 0 && todosOsChecklists[todosOsChecklists.length - 1].bloqueado;
+            const ultimaCondCondition = todosOsChecklists.length > 0 && todosOsChecklists[todosOsChecklists.length - 1].bloqueado;
 
-            if (ultimaCondicaoBloqueada) {
+            if (ultimaCondCondition) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
                 document.getElementById('ind-status').className = "txt-laranja";
                 document.getElementById('ind-oee').innerText = "0%";
