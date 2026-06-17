@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -349,10 +349,6 @@
                 
                 <button type="button" onclick="autenticarUsuario()" class="btn-azul">Entrar no Sistema</button>
             </form>
-            
-            <div style="border-top: 1px solid #475569; margin-top: 15px; padding-top: 15px; text-align: center;">
-                <span style="font-size: 11px; color: #94a3b8; display: block;">Operadores: senha 0000 | Engenharia: senha 1234</span>
-            </div>
         </div>
     </div>
 
@@ -498,12 +494,31 @@
         ];
         
         let perguntasBancoGlobal = [
+            // SEÇÃO 1: SEGURANÇA (NR-12)
             { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções e barreiras mecânicas de segurança estão no lugar e fixadas?", critico: false },
             { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e chaves de segurança respondem ao teste?", critico: true },
-            { id: "p3", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura do chassi apresenta ausência de trincas mecânicas ou fadiga?", critico: false },
-            { id: "p4", secao: "CORREIA / COMPONENTES", texto: "Lona/Correia opera livre de cortes severos ou rasgos iminentes?", critico: true },
-            { id: "p5", secao: "ACIONAMENTO", texto: "Motor e redutor operam em temperatura normal e livres de ruídos anormais?", critico: true },
-            { id: "p6", secao: "SISTEMA ELÉTRICO", texto: "Painel de comando elétrico limpo, fechado e com cabos intactos?", critico: false }
+            { id: "p3", secao: "SEGURANÇA (NR-12)", texto: "Sensores de intertravamento interrompem o ciclo quando violados?", critico: true },
+            { id: "p4", secao: "SEGURANÇA (NR-12)", texto: "Sinalização visual de advertência e placas estão legíveis?", critico: false },
+
+            // SEÇÃO 2: ESTRUTURA E ALINHAMENTO
+            { id: "p5", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura do chassi apresenta ausência de trincas mecânicas ou fadiga?", critico: false },
+            { id: "p6", secao: "ESTRUTURA E ALINHAMENTO", texto: "Alinhamento das guias laterais e roletes está centralizado?", critico: false },
+            { id: "p7", secao: "ESTRUTURA E ALINHAMENTO", texto: "Elements de fixação (parafusos/porcas) estão devidamente apertados?", critico: false },
+
+            // SEÇÃO 3: CORREIA / COMPONENTES
+            { id: "p8", secao: "CORREIA / COMPONENTES", texto: "Lona/Correia opera livre de cortes severos ou rasgos iminentes?", critico: true },
+            { id: "p9", secao: "CORREIA / COMPONENTES", texto: "Tensão da correia está regulada (sem patinar nos tambores)?", critico: false },
+            { id: "p10", secao: "CORREIA / COMPONENTES", texto: "Os roletes de carga e retorno giram livremente sem travamento?", critico: false },
+
+            // SEÇÃO 4: ACIONAMENTO E TRANSMISSÃO
+            { id: "p11", secao: "ACIONAMENTO E TRANSMISSÃO", texto: "Motor e redutor operam em temperatura normal e livres de ruídos anormais?", critico: true },
+            { id: "p12", secao: "ACIONAMENTO E TRANSMISSÃO", texto: "Nível de óleo lubrificante do redutor está na faixa operacional?", critico: false },
+            { id: "p13", secao: "ACIONAMENTO E TRANSMISSÃO", texto: "Acoplamentos, polias ou correntes de transmissão estão alinhados e sem folgas?", critico: false },
+
+            // SEÇÃO 5: SISTEMA ELÉTRICO E CONTROLE
+            { id: "p14", secao: "SISTEMA ELÉTRICO E CONTROLE", texto: "Painel de comando elétrico limpo, fechado e com cabos intactos?", critico: false },
+            { id: "p15", secao: "SISTEMA ELÉTRICO E CONTROLE", texto: "Inversor de frequência / IHM operacional e sem alertas ativos?", critico: false },
+            { id: "p16", secao: "SISTEMA ELÉTRICO E CONTROLE", texto: "Sensores de presença / fim de curso limpos e detectando corretamente?", critico: false }
         ];
 
         function atualizarSeletores() {
@@ -516,23 +531,34 @@
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
 
-            if (senha !== "0000" && senha !== "1234") {
-                alert("Senha incorreta!");
-                return;
-            }
-
-            document.getElementById('bloco-login').classList.add('escondido');
-            document.getElementById('bloco-operador').classList.remove('escondido');
-            document.getElementById('user-display').innerText = user.toUpperCase();
-
+            // Validação inteligente e restrita por tipo de perfil profissional
             if (user.startsWith('eng') || user.startsWith('manut')) {
+                if (senha !== "1234") {
+                    alert("Acesso Negado: Senha inválida para Engenharia/Manutenção.");
+                    return;
+                }
+                // Se correto, libera painel da Engenharia
+                document.getElementById('bloco-login').classList.add('escondido');
+                document.getElementById('bloco-operador').classList.remove('escondido');
+                document.getElementById('user-display').innerText = user.toUpperCase();
                 document.getElementById('menu-operador-abas').classList.add('escondido');
                 document.getElementById('menu-manutencao-abas').classList.remove('escondido');
                 alternarAbaOperador('eng-dash');
-            } else {
+            } else if (user.startsWith('op')) {
+                if (senha !== "0000") {
+                    alert("Acesso Negado: Senha inválida para Operadores.");
+                    return;
+                }
+                // Se correto, libera painel do Operador
+                document.getElementById('bloco-login').classList.add('escondido');
+                document.getElementById('bloco-operador').classList.remove('escondido');
+                document.getElementById('user-display').innerText = user.toUpperCase();
                 document.getElementById('menu-manutencao-abas').classList.add('escondido');
                 document.getElementById('menu-operador-abas').classList.remove('escondido');
                 alternarAbaOperador('op-chk');
+            } else {
+                alert("Usuário não reconhecido no banco industrial. Use prefixos 'op_' ou 'eng_'.");
+                return;
             }
 
             atualizarSeletores();
@@ -656,7 +682,7 @@
             logsSessao.push({
                 id: "OS-MANUAL-" + Date.now(),
                 data: timestamp,
-                usuario: usuario,
+                usuario: "OPERADOR",
                 equipamento: maquina,
                 tipo: "ORDEM DE SERVIÇO",
                 detalhes: `Defeito: ${descricao}`,
