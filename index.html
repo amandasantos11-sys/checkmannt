@@ -239,7 +239,7 @@
         .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
         .tag-baixa { background-color: #14532d; color: #a7f3d0; border: 1px solid #15803d; }
 
-        /* ESTILO DO POP-UP CUSTOMIZADO (MODAL) */
+        /* ESTILO DO POP-UP CUSTOMIZADO */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -684,20 +684,22 @@
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
-            // ATUALIZAÇÃO DO STATUS E DINÂMICA DO OEE REAL
+            // LOGICA CORRIGIDA: Varre a lista de checklists de trás para frente para achar o estado real da máquina
             const checklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
-            if(checklists.length > 0 && checklists[checklists.length - 1].bloqueado) {
+            const maquinaBloqueada Atualmente = checklists.length > 0 && checklists[checklists.length - 1].bloqueado;
+
+            if(maquinaBloqueadaAtualmente) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
                 document.getElementById('ind-status').className = "txt-laranja"; 
                 
-                // Se a máquina está travada, o OEE vai a zero imediatamente por falta de disponibilidade
+                // Se a máquina está de fato bloqueada pelo checklist impeditivo -> OEE VAI A ZERO!
                 document.getElementById('ind-oee').innerText = "0%";
                 document.getElementById('ind-oee').className = "txt-laranja";
             } else {
                 document.getElementById('ind-status').innerText = "OPERANDO";
                 document.getElementById('ind-status').className = "txt-verde";
                 
-                // Se operando normalmente, assume OEE padrão de alta performance industrial
+                // Se não houver bloqueio por checklist crítico, ela opera normalmente (independente de OS manuais baixa/media)
                 document.getElementById('ind-oee').innerText = "92%";
                 document.getElementById('ind-oee').className = "txt-roxo";
             }
