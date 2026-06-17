@@ -230,7 +230,7 @@
         .card-indicador p { margin: 0; font-size: 28px; font-weight: bold; }
         
         .txt-verde { color: #10b981; }
-        .txt-laranja { color: #ef4444; } /* Mudado para vermelho quando bloqueado */
+        .txt-laranja { color: #ef4444; }
         .txt-azul { color: #3b82f6; }
         .txt-roxo { color: #a855f7; }
         
@@ -238,9 +238,70 @@
         .tag-alta { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #b91c1c; }
         .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
         .tag-baixa { background-color: #14532d; color: #a7f3d0; border: 1px solid #15803d; }
+
+        /* ESTILO DO POP-UP CUSTOMIZADO (MODAL) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .modal-box {
+            background-color: #1e293b;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+        .modal-box-sucesso {
+            border-color: #10b981;
+        }
+        .modal-titulo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .modal-texto {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .btn-modal-fechar {
+            background-color: #475569;
+            color: white;
+            padding: 10px 25px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            width: auto;
+            margin: 0;
+        }
+        .btn-modal-fechar:hover {
+            background-color: #334155;
+        }
     </style>
 </head>
 <body>
+
+    <!-- POP-UP CUSTOMIZADO (ESTRUTURA DINÂMICA) -->
+    <div id="popup-customizado" class="modal-overlay escondido">
+        <div id="modal-corpo" class="modal-box">
+            <div id="popup-titulo" class="modal-titulo" style="color: #ef4444;">⚠️ ALERTA CHECKMANT</div>
+            <div id="popup-mensagem" class="modal-texto">Mensagem do sistema.</div>
+            <button type="button" class="btn-modal-fechar" onclick="fecharPopupCustomizado()">OK</button>
+        </div>
+    </div>
 
     <!-- LOGIN -->
     <div id="bloco-login">
@@ -443,6 +504,31 @@
         let usuarioAtivo = "";
         let nivelAcesso = ""; 
 
+        /* FUNÇÕES DO POP-UP PERSONALIZADO */
+        function dispararPopupCustomizado(titulo, texto, tipo) {
+            const popup = document.getElementById('popup-customizado');
+            const box = document.getElementById('modal-corpo');
+            const elTitulo = document.getElementById('popup-titulo');
+            const elTexto = document.getElementById('popup-mensagem');
+
+            elTitulo.innerText = titulo;
+            elTexto.innerHTML = texto;
+
+            if (tipo === 'erro' || tipo === 'critico') {
+                box.className = "modal-box"; 
+                elTitulo.style.color = "#ef4444";
+            } else {
+                box.className = "modal-box modal-box-sucesso";
+                elTitulo.style.color = "#10b981";
+            }
+
+            popup.classList.remove('escondido');
+        }
+
+        function fecharPopupCustomizado() {
+            document.getElementById('popup-customizado').classList.add('escondido');
+        }
+
         function atualizarSeletoresMaquinas() {
             document.getElementById('seletor-equipamento-op').innerHTML = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
         }
@@ -451,7 +537,10 @@
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
             
-            if (senha !== "0000" && senha !== "1234") return alert("Senha incorreta.");
+            if (senha !== "0000" && senha !== "1234") {
+                dispararPopupCustomizado("⚠️ ERRO DE ACESSO", "Senha digitada está incorreta.", "erro");
+                return;
+            }
 
             if (user.startsWith('manut')) {
                 nivelAcesso = "manutencao";
@@ -513,7 +602,6 @@
             if(document.getElementById(`aba-li-${abaId}`)) document.getElementById(`aba-li-${abaId}`).classList.add('ativo');
         }
 
-        // DISPARO E PROCESSAMENTO DO CHECKLIST COMPLETO
         document.getElementById('form-checklist').onsubmit = function(e) {
             e.preventDefault();
             let detalhesArray = [];
@@ -533,7 +621,6 @@
                 }
             });
 
-            // 1. Salva o Checklist no histórico global
             logsSessao.push({
                 data: timestampAtual,
                 usuario: usuarioAtivo,
@@ -543,11 +630,14 @@
                 bloqueado: possuiNokCritico
             });
 
-            // 2. Se houver falha crítica, avisa e gera a O.S automática
             if(possuiNokCritico) {
-                alert(`⚠️ ATENÇÃO: A MÁQUINA NÃO PODE RODAR ANTES QUE A MANUTENÇÃO ATUE!\n\nO monitoramento detectou não conformidades nos itens obrigatórios.`);
+                // Dispara o pop-up customizado com o nome do sistema no topo
+                dispararPopupCustomizado(
+                    "⚠️ ALERTA CHECKMANT", 
+                    "<strong>ATENÇÃO: A MÁQUINA NÃO PODE RODAR ANTES QUE A MANUTENÇÃO ATUE!</strong><br><br>O monitoramento detectou não conformidades nos itens obrigatórios.", 
+                    "critico"
+                );
                 
-                // Geração automática da O.S. de Bloqueio Crítico
                 logsSessao.push({
                     data: timestampAtual,
                     usuario: "SISTEMA (AUTO)",
@@ -556,7 +646,7 @@
                     detalhes: `CRITICIDADE: ALTA | Solicitante: Sistema Checkmant | Falha crítica detectada via Checklist nos itens obrigatórios: [${itensComFalha.join('; ')}]`
                 });
             } else {
-                alert("✅ Monitoramento de condição básica enviado com sucesso!");
+                dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Monitoramento de condição básica enviado com sucesso!", "sucesso");
             }
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
@@ -581,7 +671,7 @@
             });
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
-            alert("O.S. Aberta com Sucesso!");
+            dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Ordem de Serviço (O.S.) emitida com sucesso!", "sucesso");
             document.getElementById('form-os').reset();
             atualizarVisualizacaoLogs();
             alternarAba('hist');
@@ -595,7 +685,6 @@
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
-            // Determina se há algum bloqueio ativo na planta baseado no último checklist
             const checklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
             if(checklists.length > 0 && checklists[checklists.length - 1].bloqueado) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
@@ -661,7 +750,7 @@
                 localStorage.setItem('checkmant_maquinas', JSON.stringify(listaEquipamentos));
                 atualizarSeletoresMaquinas(); 
                 document.getElementById('cfg-nova-maquina').value = "";
-                alert("Equipamento cadastrado com sucesso!"); 
+                dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Equipamento cadastrado com sucesso!", "sucesso");
             }
         }
 
@@ -684,9 +773,9 @@
                 localStorage.setItem('checkmant_perguntas', JSON.stringify(perguntasOficiais));
                 montarPerguntas();
                 document.getElementById('cfg-nova-pergunta').value = "";
-                alert("Nova pergunta inserida e salva com sucesso!");
+                dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Nova pergunta inserida e salva com sucesso!", "sucesso");
             } else {
-                alert("Por favor, digite o texto da pergunta.");
+                dispararPopupCustomizado("⚠️ ERRO CONFIG", "Por favor, digite o texto da pergunta.", "erro");
             }
         }
     </script>
