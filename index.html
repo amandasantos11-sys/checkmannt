@@ -744,3 +744,31 @@
 
                     if (log.statusKanban === "Pendente") {
                         cPend++;
+                        htmlCard += `<button class="btn-kanban-acao btn-azul" onclick="moverKanban('${log.id}', 'Em Execução')">Atender ➔</button>`;
+                        htmlCard += `</div></div>`;
+                        colPendente += htmlCard;
+                    } else if (log.statusKanban === "Em Execução") {
+                        cExec++;
+                        htmlCard += `<button class="btn-kanban-acao btn-verde" onclick="moverKanban('${log.id}', 'Concluído')">Concluir ✓</button>`;
+                        htmlCard += `</div></div>`;
+                        colExecucao += htmlCard;
+                    } else if (log.statusKanban === "Concluído") {
+                        cConc++;
+                        htmlCard += `<span style="color:#10b981; font-size:11px; font-weight:bold;">✓ Finalizada</span>`;
+                        htmlCard += `</div></div>`;
+                        colConcluido += htmlCard;
+                    }
+                }
+            });
+
+            document.getElementById('coluna-pendente').innerHTML = colPendente || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
+            document.getElementById('coluna-execucao').innerHTML = colExecucao || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
+            document.getElementById('coluna-concluido').innerHTML = colConcluido || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
+
+            document.getElementById('count-pendente').innerText = cPend;
+            document.getElementById('count-execucao').innerText = cExec;
+            document.getElementById('count-concluido').innerText = cConc;
+        }
+    </script>
+</body>
+</html>
