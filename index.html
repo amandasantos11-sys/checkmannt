@@ -250,7 +250,84 @@
         /* Ocultor de telas */
         .escondido { display: none !important; }
 
-        /* Badges de conformidade adicionais */
+        /* ESTRUTURA DO KANBAN DINÂMICO */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        @media (min-width: 768px) {
+            .kanban-board { grid-template-columns: 1fr 1fr 1fr; }
+        }
+        .kanban-coluna {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 250px;
+        }
+        .kanban-coluna-titulo {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .count-badge {
+            background-color: #334155;
+            color: #f8fafc;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        
+        /* Card de Tarefa Kanban */
+        .kanban-card {
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .kanban-card-alta {
+            border-left: 4px solid #ef4444 !important;
+            background: linear-gradient(90deg, #2c1a1a 0%, #1e293b 100%);
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { border-color: #ef4444; }
+            50% { border-color: #7f1d1d; }
+            100% { border-color: #ef4444; }
+        }
+        .kanban-card h4 { margin: 0 0 6px 0; font-size: 13px; color: #f8fafc; display: flex; justify-content: space-between; }
+        .kanban-card p { margin: 0 0 10px 0; font-size: 12px; color: #cbd5e1; white-space: pre-line; }
+        .kanban-meta { font-size: 10px; color: #94a3b8; margin-bottom: 8px; display: block; }
+        
+        .kanban-acoes {
+            display: flex;
+            gap: 5px;
+            border-top: 1px solid #334155;
+            padding-top: 8px;
+            margin-top: 5px;
+        }
+        .btn-kanban-acao {
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 0;
+            width: auto;
+            flex: 1;
+        }
+
+        /* Badges e Outros Elementos */
         .badge-ok { background-color: #065f46; color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
         .badge-nok { background-color: #7f1d1d; color: #f87171; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
         .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative;}
@@ -300,8 +377,8 @@
     <div id="bloco-operador" class="container escondido">
         <header>
             <div class="titulos">
-                <h1 class="titulo-checklist">CHECKMANT - Painel de Fábrica</h1>
-                <p>Usuário ativo: <span id="user-display" style="font-weight: bold;">op_1</span></p>
+                <h1 class="titulo-checklist">CHECKMANT - Sistema Integrado (<span id="user-display">op_1</span>)</h1>
+                <p>Navegue pelas rotinas operacionais e de engenharia:</p>
             </div>
             <div style="width: auto;">
                 <button onclick="fazerLogout()" class="btn-cinza" style="padding: 8px 15px; margin: 0; width: auto;">Sair / Logout</button>
@@ -325,11 +402,11 @@
                 <li class="menu-item ativo" id="item-eng-dash" onclick="alternarAbaOperador('eng-dash')">
                     <span>📊 Indicadores / Painel</span> <span class="setinha">➔</span>
                 </li>
-                <li class="menu-item" id="item-eng-feed" onclick="alternarAbaOperador('eng-feed')">
-                    <span>📥 Feed de Acompanhamento</span> <span class="setinha">➔</span>
+                <li class="menu-item" id="item-eng-kanban" onclick="alternarAbaOperador('eng-kanban')">
+                    <span>📋 Kanban Backlog</span> <span class="setinha">➔</span>
                 </li>
-                <li class="menu-item" id="item-eng-backlog" onclick="alternarAbaOperador('eng-backlog')">
-                    <span>🗂️ Backlog de O.S.</span> <span class="setinha">➔</span>
+                <li class="menu-item" id="item-eng-feed" onclick="alternarAbaOperador('eng-feed')">
+                    <span>📥 Feed de Atividades</span> <span class="setinha">➔</span>
                 </li>
             </ul>
 
@@ -337,11 +414,13 @@
                 
                 <div id="aba-op-chk" class="bloco">
                     <h2 class="titulo-checklist">📋 Checklist Operacional Diário</h2>
+                    
                     <div class="form-group" style="margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 8px;">
                         <label style="color: #34d399;">MÁQUINA DIRECIONADA:</label>
-                        <select id="operador-seletor-equipamento" style="border-color: #34d399; font-weight: bold; color: #34d399;">
+                        <select id="operador-seletor-equipamento" onchange="montarChecklistNaTelaDoOperador()" style="border-color: #34d399; font-weight: bold; color: #34d399;">
                         </select>
                     </div>
+
                     <form id="form-checklist" onsubmit="validarChecklist(event)">
                         <div class="area-rolavel-checklist" id="container-perguntas-checklist"></div>
                         <button type="submit" class="btn-verde">Enviar Checklist do Equipamento</button>
@@ -352,11 +431,11 @@
                     <h2 class="titulo-os">🛠️ Abrir O.S. de Manutenção</h2>
                     <form id="form-os" onsubmit="criarNovaOS(event)">
                         <div class="form-group">
-                            <label>Nome do Solicitante:</label>
-                            <input type="text" id="os-solicitante" placeholder="Seu nome" required>
+                            <label>EQUIPAMENTO COM DEFEITO:</label>
+                            <select id="os-equipamento" required></select>
                         </div>
                         <div class="form-group">
-                            <label>Turno:</label>
+                            <label>TURNO:</label>
                             <select id="os-turno" required>
                                 <option value="1º Turno">1º Turno</option>
                                 <option value="2º Turno">2º Turno</option>
@@ -364,18 +443,26 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Urgência:</label>
+                            <label>ÁREA / SETOR INDUSTRIAL:</label>
+                            <input type="text" id="os-area" placeholder="Ex: Setor de Triagem, Linha de Ensaque..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>RESPONSÁVEL OPERACIONAL / SOLICITANTE:</label>
+                            <input type="text" id="os-solicitante" placeholder="Seu nome completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>URGÊNCIA DO PROBLEMA:</label>
                             <select id="os-criticidade" required>
-                                <option value="baixa">🟢 BAIXA</option>
-                                <option value="media">🟡 MÉDIA</option>
-                                <option value="alta">🔴 ALTA / CRÍTICA</option>
+                                <option value="baixa">🟢 BAIXA (Não impede produção)</option>
+                                <option value="media">🟡 MÉDIA (Alerta operacional)</option>
+                                <option value="alta">🔴 ALTA (Risco de parada iminente)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Descrição do Defeito:</label>
-                            <textarea id="os-descricao" rows="4" placeholder="Descreva o problema observado..." required></textarea>
+                            <label>DESCRIÇÃO DETALHADA DO DEFEITO:</label>
+                            <textarea id="os-descricao" rows="4" placeholder="Descreva os sintomas, ruídos ou anomalias observadas..." required></textarea>
                         </div>
-                        <button type="submit" class="btn-laranja">Emitir O.S.</button>
+                        <button type="submit" class="btn-laranja">Emitir e Registrar O.S.</button>
                     </form>
                 </div>
 
@@ -387,21 +474,34 @@
                 <div id="aba-eng-dash" class="bloco escondido">
                     <h2 class="titulo-manutencao">📊 Painel de Indicadores Industriais</h2>
                     <div class="grid-indicadores">
-                        <div class="card-indicador"><h3>Status</h3><p class="txt-verde" id="ind-status">OPERANDO</p></div>
+                        <div class="card-indicador"><h3>Status Atual</h3><p class="txt-verde" id="ind-status">OPERANDO</p></div>
                         <div class="card-indicador"><h3>OEE Real</h3><p class="txt-roxo" id="ind-oee">92%</p></div>
                         <div class="card-indicador"><h3>Checklists</h3><p class="txt-azul" id="ind-checklists">0</p></div>
                         <div class="card-indicador"><h3>O.S. Criadas</h3><p class="txt-laranja" id="ind-os">0</p></div>
                     </div>
                 </div>
 
-                <div id="aba-eng-feed" class="bloco escondido">
-                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento Real-Time</h2>
-                    <div id="lista-feed-manutencao"></div>
+                <div id="aba-eng-kanban" class="bloco escondido">
+                    <h2 class="titulo-manutencao">🗂️ Gestão Visual de Ordens (Kanban)</h2>
+                    <div class="kanban-board">
+                        <div class="kanban-coluna">
+                            <div class="kanban-coluna-titulo"><span>Pendente</span> <span class="count-badge" id="count-pendente">0</span></div>
+                            <div id="coluna-pendente"></div>
+                        </div>
+                        <div class="kanban-coluna">
+                            <div class="kanban-coluna-titulo"><span>Em Execução</span> <span class="count-badge" id="count-execucao">0</span></div>
+                            <div id="coluna-execucao"></div>
+                        </div>
+                        <div class="kanban-coluna">
+                            <div class="kanban-coluna-titulo"><span>Concluído</span> <span class="count-badge" id="count-concluido">0</span></div>
+                            <div id="coluna-concluido"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="aba-eng-backlog" class="bloco escondido">
-                    <h2 class="titulo-manutencao">🗂️ Backlog Geral de Ordens de Serviço (O.S.)</h2>
-                    <div id="lista-backlog-manutencao"></div>
+                <div id="aba-eng-feed" class="bloco escondido">
+                    <h2 class="titulo-manutencao">📥 Feed de Atividades Real-Time</h2>
+                    <div id="lista-feed-manutencao"></div>
                 </div>
 
             </div>
@@ -409,20 +509,27 @@
     </div>
 
     <script>
+        // BANCO DE DADOS E CONFIGURAÇÕES ORIGINAIS PRESERVADOS
         let logsSessao = JSON.parse(localStorage.getItem('checkmant_logs')) || [];
-        let listaEquipamentos = ["Esteira Transportadora Tecfag RC1M/V90"];
+        let listaEquipamentos = [
+            "Esteira Transportadora Tecfag RC1M/V90",
+            "Seladora Automática Continuous Band Sealer",
+            "Injetora de Plásticos Multicavidades Premium"
+        ];
         
-        let perguntasPadrao = [
-            { id: "p1_1", secao: "SEGURANÇA (NR-12)", texto: "Proteções e barreiras de segurança (guarda-corpo, telas) estão no lugar e em bom estado?", critico: false },
-            { id: "p1_2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e dispositivos de parada estão acessíveis e funcionando?", critico: true },
-            { id: "p2_1", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura metálica apresenta trincas ou deformações mecânicas?", critico: false },
-            { id: "p3_1", secao: "CORREIA (LONA)", texto: "Correia apresenta cortes, rasgos profundos ou furos iminentes?", critico: true },
-            { id: "p4_2", secao: "ACIONAMENTO (MOTORREDUTOR)", texto: "Ausência de ruídos ou vibrações dinâmicas anormais no motor/redutor?", critico: true }
+        let perguntasBancoGlobal = [
+            { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções e barreiras mecânicas de segurança estão no lugar e fixadas?", critico: false },
+            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e chaves de segurança respondem perfeitamente ao teste?", critico: true },
+            { id: "p3", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura do chassi apresenta ausência de trincas mecânicas ou fadiga?", critico: false },
+            { id: "p4", secao: "CORREIA / COMPONENTES", texto: "Lona/Correia opera livre de cortes severos ou rasgos iminentes?", critico: true },
+            { id: "p5", secao: "ACIONAMENTO", texto: "Motor e redutor operam em temperatura normal e livres de ruídos anormais?", critico: true },
+            { id: "p6", secao: "SISTEMA ELÉTRICO", texto: "Painel de comando elétrico limpo, fechado e com cabos intactos?", critico: false }
         ];
 
         function atualizarSeletores() {
             const htmlOpcoes = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
             document.getElementById('operador-seletor-equipamento').innerHTML = htmlOpcoes;
+            document.getElementById('os-equipamento').innerHTML = htmlOpcoes;
         }
 
         function autenticarUsuario() {
@@ -430,7 +537,7 @@
             const senha = document.getElementById('login-senha').value;
 
             if (senha !== "0000" && senha !== "1234") {
-                alert("Senha incorreta!");
+                alert("Senha incorreta operacional!");
                 return;
             }
 
@@ -453,6 +560,13 @@
             atualizarPainelEHistoricos();
         }
 
+        function做Logout() {
+            fazerLogout();
+        }
+
+        function做Logout() {
+            // alias fix
+        }
         function fazerLogout() {
             document.getElementById('bloco-operador').classList.add('escondido');
             document.getElementById('bloco-login').classList.remove('escondido');
@@ -460,20 +574,16 @@
         }
 
         function alternarAbaOperador(abaId) {
-            // Oculta todos os blocos de abas
             document.getElementById('aba-op-chk').classList.add('escondido');
             document.getElementById('aba-op-os').classList.add('escondido');
             document.getElementById('aba-op-hist').classList.add('escondido');
             document.getElementById('aba-eng-dash').classList.add('escondido');
+            document.getElementById('aba-eng-kanban').classList.add('escondido');
             document.getElementById('aba-eng-feed').classList.add('escondido');
-            document.getElementById('aba-eng-backlog').classList.add('escondido');
 
-            // Tira a classe 'ativo' de todos os botões das listas
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('ativo'));
 
-            // Exibe a aba clicada e marca o menu correspondente como ativo
             document.getElementById(`aba-${abaId}`).classList.remove('escondido');
-            
             let itemMenu = document.getElementById(`item-${abaId}`);
             if (itemMenu) itemMenu.classList.add('ativo');
         }
@@ -482,7 +592,7 @@
             let html = "";
             let secaoAtual = "";
             
-            perguntasPadrao.forEach(p => {
+            perguntasBancoGlobal.forEach(p => {
                 if (p.secao !== secaoAtual) {
                     secaoAtual = p.secao;
                     html += `<div class="header-secao-checklist">${secaoAtual}</div>`;
@@ -491,7 +601,7 @@
                     <div class="pergunta-card ${p.critico ? 'critico' : ''}">
                         <div class="pergunta-texto">
                             <strong>${p.texto}</strong>
-                            ${p.critico ? '<span class="obs-obrigatorio">* ITEM IMPEDITIVO / CRÍTICO</span>' : ''}
+                            ${p.critico ? '<span class="obs-obrigatorio">* ITEM IMPEDITIVO / BLOQUEANTE</span>' : ''}
                         </div>
                         <div class="opcoes-radio">
                             <label><input type="radio" name="${p.id}" value="OK" required> OK</label>
@@ -513,7 +623,7 @@
             let bloqueiaEquipamento = false;
             let falhasDetectadas = [];
 
-            perguntasPadrao.forEach(p => {
+            perguntasBancoGlobal.forEach(p => {
                 const elemento = document.querySelector(`input[name="${p.id}"]:checked`);
                 const resposta = elemento ? elemento.value : "N/A";
                 detalhes.push(`${p.texto} [${resposta}]`);
@@ -525,27 +635,34 @@
             });
 
             logsSessao.push({
+                id: "OS-" + Date.now(),
                 data: timestamp,
                 usuario: usuario,
                 equipamento: maquina,
                 tipo: "CHECKLIST",
                 detalhes: detalhes.join(' | '),
-                bloqueado: bloqueiaEquipamento
+                bloqueado: bloqueiaEquipamento,
+                statusKanban: bloqueiaEquipamento ? "Pendente" : "N/A",
+                criticidade: bloqueiaEquipamento ? "alta" : "baixa"
             });
 
             if (bloqueiaEquipamento) {
-                alert("⚠️ ATENÇÃO: Máquina Bloqueada! Item obrigatório em desconformidade. O OEE foi zerado.");
+                alert("⚠️ CONDICIONAL IMPEDITIVA DETECTADA! O equipamento foi classificado como BLOQUEADO e o indicador OEE zerou.");
                 
-                // Dispara a O.S automática de emergência crítica
                 logsSessao.push({
+                    id: "OS-AUTO-" + Date.now(),
                     data: timestamp,
                     usuario: "SISTEMA (AUTO)",
                     equipamento: maquina,
                     tipo: "ORDEM DE SERVIÇO",
-                    detalhes: `CRITICIDADE: ALTA | Falha impeditiva detectada no Checklist: [${falhasDetectadas.join('; ')}]`
+                    detalhes: `CRITICIDADE: CRÍTICA/ALTA | Falha grave detectada em itens de checklist impeditivos: [${falhasDetectadas.join('; ')}]`,
+                    statusKanban: "Pendente",
+                    criticidade: "alta",
+                    area: "Não especificada (Checklist)",
+                    solicitante: "Robô Checkmant"
                 });
             } else {
-                alert("Checklist enviado com sucesso! Equipamento liberado.");
+                alert("Monitoramento concluído! Equipamento liberado para operação regular.");
             }
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
@@ -556,27 +673,44 @@
 
         function criarNovaOS(event) {
             event.preventDefault();
-            const maquina = document.getElementById('operador-seletor-equipamento').value;
+            const maquina = document.getElementById('os-equipamento').value;
             const usuario = document.getElementById('user-display').innerText;
             const solicitante = document.getElementById('os-solicitante').value;
             const turno = document.getElementById('os-turno').value;
+            const area = document.getElementById('os-area').value;
             const criticidade = document.getElementById('os-criticidade').value;
             const descricao = document.getElementById('os-descricao').value;
             const timestamp = new Date().toLocaleString('pt-BR');
 
             logsSessao.push({
+                id: "OS-MANUAL-" + Date.now(),
                 data: timestamp,
                 usuario: usuario,
                 equipamento: maquina,
                 tipo: "ORDEM DE SERVIÇO",
-                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${solicitante} (${turno}) | Defeito: ${descricao}`
+                detalhes: `Defeito: ${descricao}`,
+                statusKanban: "Pendente",
+                criticidade: criticidade,
+                area: area,
+                solicitante: solicitante,
+                turno: turno
             });
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
-            alert("Ordem de Serviço gerada com sucesso e enviada ao Backlog!");
+            alert("Ordem de Serviço manual integrada com sucesso ao Backlog!");
             document.getElementById('form-os').reset();
             atualizarPainelEHistoricos();
             alternarAbaOperador('op-hist');
+        }
+
+        function moverKanban(idItem, novoStatus) {
+            logsSessao = JSON.parse(localStorage.getItem('checkmant_logs')) || [];
+            let item = logsSessao.find(l => l.id === idItem);
+            if (item) {
+                item.statusKanban = novoStatus;
+                localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
+                atualizarPainelEHistoricos();
+            }
         }
 
         function atualizarPainelEHistoricos() {
@@ -588,11 +722,11 @@
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
-            // ANALISE DO ESTADO REAL DA MÁQUINA ATRAVÉS DO ÚLTIMO CHECKLIST ENVIADO
-            const checklistsEnviados = logsSessao.filter(l => l.tipo === "CHECKLIST");
-            const estaBloqueadaPorChecklist = checklistsEnviados.length > 0 && checklistsEnviados[checklistsEnviados.length - 1].bloqueado;
+            // ANÁLISE CIRÚRGICA: OEE só zera se o último checklist disser que há BLOQUEIO impeditivo ativo
+            const todosOsChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
+            const ultimaCondicaoBloqueada = todosOsChecklists.length > 0 && todosOsChecklists[todosOsChecklists.length - 1].bloqueado;
 
-            if (estaBloqueadaPorChecklist) {
+            if (ultimaCondicaoBloqueada) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
                 document.getElementById('ind-status').className = "txt-laranja";
                 document.getElementById('ind-oee').innerText = "0%";
@@ -604,56 +738,69 @@
                 document.getElementById('ind-oee').className = "txt-roxo";
             }
 
-            // RENDERIZAÇÃO DO HISTÓRICO LOCAL OPERADOR
+            // RENDERS DE HISTÓRICO LOCAL E FEED
             document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
-                <div class="os-status-item" style="${log.bloqueado ? 'border-left: 4px solid #ef4444;' : ''}">
-                    <strong>${log.data} - ${log.tipo} ${log.bloqueado ? '<span style="color:#ef4444;">(BLOQUEIO ATIVO)</span>' : ''}</strong><br>${log.detalhes}
+                <div class="os-status-item" style="${log.bloqueado ? 'border-left: 4px solid #ef4444;' : 'border-left: 4px solid #475569;'}">
+                    <strong>${log.data} - ${log.tipo} ${log.bloqueado ? '<span style="color:#ef4444;">(BLOQUEADO POR CHECKLIST)</span>' : ''}</strong><br>
+                    <span style="font-size: 11px; color:#94a3b8;">Equipamento: ${log.equipamento} ${log.area ? `| Setor: ${log.area}` : ''}</span><br>
+                    <span>${log.detalhes}</span>
                 </div>
             `).join('');
 
-            // RENDERIZAÇÃO DO FEED COMPLETO DA MANUTENÇÃO
-            document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => {
-                if (log.tipo === "CHECKLIST") {
-                    return `
-                        <div class="os-status-item" style="border-left: 4px solid ${log.bloqueado ? '#ef4444' : '#10b981'};">
-                            <strong style="color:${log.bloqueado ? '#ef4444' : '#10b981'};">📋 ${log.data} - CHECKLIST OPERACIONAL</strong> (${log.equipamento})<br>
-                            <span style="font-size:11px; color:#94a3b8;">Verificado por: ${log.usuario}</span><br>
-                            <span style="color: #cbd5e1;">${log.detalhes}</span>
-                        </div>
+            document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
+                <div class="os-status-item" style="border-left: 4px solid ${log.tipo === 'CHECKLIST' ? (log.bloqueado ? '#ef4444' : '#10b981') : '#f59e0b'};">
+                    <strong>${log.tipo === 'CHECKLIST' ? '📋 CHECKLIST COLETADO' : '🛠️ ORDEM DE SERVIÇO EMITIDA'}</strong> (${log.equipamento})<br>
+                    <span style="font-size:11px; color:#94a3b8;">Data: ${log.data} | Usuário: ${log.usuario}</span><br>
+                    <p style="margin: 5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
+                </div>
+            `).join('');
+
+            // FLUXO DO KANBAN DINÂMICO
+            let colPendente = "";
+            let colExecucao = "";
+            let colConcluido = "";
+            
+            let cPend = 0, cExec = 0, cConc = 0;
+
+            logsSessao.forEach(log => {
+                if (log.tipo === "ORDEM DE SERVIÇO" && log.statusKanban) {
+                    let cardClass = log.criticidade === "alta" ? "kanban-card kanban-card-alta" : "kanban-card";
+                    let badgeCriticidade = log.criticidade === "alta" ? "🔴 ALTA" : (log.criticidade === "media" ? "🟡 MÉDIA" : "🟢 BAIXA");
+
+                    let htmlCard = `
+                        <div class="${cardClass}">
+                            <h4><span>${log.equipamento}</span> <span style="font-size:10px;">${badgeCriticidade}</span></h4>
+                            <p>${log.detalhes}</p>
+                            <span class="kanban-meta">Solicitante: ${log.solicitante || 'Não inf.'} | Setor: ${log.area || 'Geral'}</span>
+                            <div class="kanban-acoes">
                     `;
-                } else {
-                    const auto = log.usuario === "SISTEMA (AUTO)";
-                    return `
-                        <div class="os-status-item" style="border-left: 4px solid #f59e0b; ${auto ? 'background-color: #2d1616; border-color: #ef4444;' : ''}">
-                            <strong style="color: ${auto ? '#ef4444' : '#f59e0b'};">🛠️ ${log.data} - O.S. ABERTA ${auto ? 'AUTOMATICAMENTE' : ''}</strong> (${log.equipamento})<br>
-                            <span>${log.detalhes}</span>
-                        </div>
-                    `;
+
+                    if (log.statusKanban === "Pendente") {
+                        cPend++;
+                        htmlCard += `<button class="btn-kanban-acao btn-azul" onclick="moverKanban('${log.id}', 'Em Execução')">Atender ➔</button>`;
+                        htmlCard += `</div></div>`;
+                        colPendente += htmlCard;
+                    } else if (log.statusKanban === "Em Execução") {
+                        cExec++;
+                        htmlCard += `<button class="btn-kanban-acao btn-verde" onclick="moverKanban('${log.id}', 'Concluído')">Concluir ✓</button>`;
+                        htmlCard += `</div></div>`;
+                        colExecucao += htmlCard;
+                    } else if (log.statusKanban === "Concluído") {
+                        cConc++;
+                        htmlCard += `<span style="color:#10b981; font-size:11px; font-weight:bold;">✓ Finalizada</span>`;
+                        htmlCard += `</div></div>`;
+                        colConcluido += htmlCard;
+                    }
                 }
-            }).join('');
+            });
 
-            // RENDERIZAÇÃO DO BACKLOG DE O.S.
-            const listaOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
-            if (listaOS.length === 0) {
-                document.getElementById('lista-backlog-manutencao').innerHTML = "<p style='color:#94a3b8; font-size:13px;'>Nenhuma ordem de serviço ativa no backlog.</p>";
-            } else {
-                document.getElementById('lista-backlog-manutencao').innerHTML = listaOS.map(log => {
-                    let badgeClass = "tag-baixa";
-                    let critText = "baixa";
-                    const upText = log.detalhes.toUpperCase();
+            document.getElementById('coluna-pendente').innerHTML = colPendente || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
+            document.getElementById('coluna-execucao').innerHTML = colExecucao || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
+            document.getElementById('coluna-concluido').innerHTML = colConcluido || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
 
-                    if (upText.includes("ALTA")) { badgeClass = "tag-alta"; critText = "alta / crítica"; }
-                    else if (upText.includes("MEDIA") || upText.includes("MÉDIA")) { badgeClass = "tag-media"; critText = "média"; }
-
-                    return `
-                        <div class="os-status-item" style="padding-right: 90px;">
-                            <span class="tag-critica ${badgeClass}">${critText}</span>
-                            <strong>${log.data} - ${log.equipamento}</strong><br>
-                            <span>${log.detalhes}</span>
-                        </div>
-                    `;
-                }).join('');
-            }
+            document.getElementById('count-pendente').innerText = cPend;
+            document.getElementById('count-execucao').innerText = cExec;
+            document.getElementById('count-concluido').innerText = cConc;
         }
     </script>
 </body>
