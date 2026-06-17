@@ -21,6 +21,7 @@
             margin: 0 auto;
         }
         
+        /* Cabeçalho dos Painéis Internos */
         header {
             display: flex;
             justify-content: space-between;
@@ -32,6 +33,7 @@
         .titulos h1 { margin: 0 0 5px 0; font-size: 26px; font-weight: 800; }
         .titulos p { margin: 0; color: #94a3b8; font-size: 14px; }
         
+        /* TELA DE LOGIN FORMATADA */
         #bloco-login {
             display: flex;
             justify-content: center;
@@ -50,15 +52,19 @@
         .card-login h2 { color: #34d399; margin: 0 0 5px 0; font-size: 32px; font-weight: 900; text-align: center; letter-spacing: 1px; }
         .card-login p { color: #94a3b8; font-size: 13px; margin-bottom: 25px; text-align: center; }
         
+        /* LAYOUT DE NAVEGAÇÃO POR ABAS/LISTAS */
         .layout-abas {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
         @media (min-width: 768px) {
-            .layout-abas { flex-direction: row; }
+            .layout-abas {
+                flex-direction: row;
+            }
         }
 
+        /* Menu de Navegação em Lista */
         .menu-lista {
             list-style: none;
             padding: 0;
@@ -92,9 +98,19 @@
             border-color: #3b82f6;
             color: white;
         }
+        .menu-item.ativo .setinha {
+            transform: rotate(90deg);
+        }
+        .setinha {
+            transition: transform 0.2s;
+        }
 
-        .conteudo-aba { flex: 1; }
+        /* Área do Conteúdo Selecionado */
+        .conteudo-aba {
+            flex: 1;
+        }
         
+        /* Blocos/Painéis Internos */
         .bloco {
             background-color: #1e293b;
             border: 1px solid #475569;
@@ -110,58 +126,69 @@
             font-size: 20px;
         }
 
-        /* CAIXA COM ROLAGEM INTERNA */
+        /* BARRA DE ROLAGEM OTIMIZADA E FORÇADA */
         .area-rolavel-checklist {
-            max-height: 500px;
-            overflow-y: auto;
-            margin-bottom: 20px;
+            max-height: 52vh;
+            overflow-y: scroll !important;
+            padding-right: 12px;
+            margin-bottom: 15px;
             border: 1px solid #334155;
             background-color: #0f172a;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
         }
 
-        .area-rolavel-checklist::-webkit-scrollbar {
-            width: 8px;
+        /* Estilização da barra de rolagem */
+        .area-rolavel-checklist::-webkit-scrollbar, .bloco::-webkit-scrollbar {
+            width: 10px;
+        }
+        .area-rolavel-checklist::-webkit-scrollbar-thumb, .bloco::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 6px;
+            border: 2px solid #0f172a;
+        }
+        .area-rolavel-checklist::-webkit-scrollbar-thumb:hover {
+            background-color: #64748b;
         }
         .area-rolavel-checklist::-webkit-scrollbar-track {
             background: #0f172a;
-        }
-        .area-rolavel-checklist::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-        .area-rolavel-checklist::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+            border-radius: 6px;
         }
         
-        .titulo-operador { color: #34d399; }
-        .titulo-manutencao { color: #f59e0b; }
+        /* Cores de Títulos específicos */
+        .titulo-checklist { color: #34d399; }
+        .titulo-os { color: #f59e0b; }
+        .titulo-status { color: #60a5fa; }
+        .titulo-manutencao { color: #a855f7; }
         
+        /* Seções internas do Checklist */
         .header-secao-checklist {
             background-color: #1e293b;
             color: #38bdf8;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            padding: 8px 12px;
-            margin: 18px 0 8px 0;
+            padding: 6px 10px;
+            margin: 15px 0 6px 0;
             border-left: 3px solid #38bdf8;
             text-transform: uppercase;
-            border-radius: 0 4px 4px 0;
+            letter-spacing: 0.05em;
         }
+        .header-secao-checklist:first-child { margin-top: 0; }
 
+        /* Elementos de Formulários */
         .pergunta-card {
             background-color: #1e293b;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
+            font-size: 12.5px;
             border: 1px solid #334155;
             gap: 15px;
         }
+        .critico { background-color: #451a03; border: 1px solid #854d0e; color: #fef08a; }
         .pergunta-texto { flex: 1; }
         .obs-obrigatorio { display: block; font-size: 11px; color: #f87171; font-weight: bold; margin-top: 2px; }
         
@@ -185,23 +212,24 @@
             box-sizing: border-box;
         }
         
-        .opcoes-radio { display: flex; gap: 8px; }
+        .opcoes-radio { display: flex; gap: 8px; flex-shrink: 0; }
         .opcoes-radio label {
             display: flex;
             align-items: center;
             gap: 4px;
             background-color: #0f172a;
-            padding: 6px 12px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            border: 1px solid #475569;
+            font-size: 11px;
+            border: 1px solid #334155;
+            color: #cbd5e1;
         }
         
-        button, .btn-manual {
+        /* Botões Estilizados */
+        button, .btn-link-formatado {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             font-weight: bold;
             border-radius: 8px;
             font-size: 14px;
@@ -209,21 +237,24 @@
             cursor: pointer;
             margin-bottom: 10px;
             display: block;
-            text-align: center;
             box-sizing: border-box;
+            text-align: center;
             text-decoration: none;
         }
         .btn-azul { background-color: #2563eb; color: white; }
-        .btn-verde { background-color: #059669; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-roxo { background-color: #7c3aed; color: white; }
+        .btn-verde { background-color: #059669; color: white; }
         .btn-laranja { background-color: #d97706; color: white; }
         .btn-cinza { background-color: #475569; color: white; }
-        .btn-manual { background-color: #dc2626; color: white; display: inline-block; width: auto; }
         
+        /* Ocultor de telas */
         .escondido { display: none !important; }
-        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative; }
-        
-        .badge-resposta { display: block; font-family: monospace; background: #0f172a; padding: 6px; border-radius: 4px; margin-top: 5px; border-left: 3px solid #3b82f6; color: #cbd5e1; }
-        
+
+        /* Badges de conformidade adicionais */
+        .badge-ok { background-color: #065f46; color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
+        .badge-nok { background-color: #7f1d1d; color: #f87171; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
+        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative;}
+
         .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .card-indicador { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; text-align: center; }
         .card-indicador h3 { margin: 0 0 5px 0; font-size: 12px; color: #94a3b8; text-transform: uppercase; }
@@ -233,155 +264,104 @@
         .txt-laranja { color: #ef4444; }
         .txt-azul { color: #3b82f6; }
         .txt-roxo { color: #a855f7; }
-        
+
         .tag-critica { position: absolute; top: 12px; right: 12px; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .tag-alta { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #b91c1c; }
         .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
         .tag-baixa { background-color: #14532d; color: #a7f3d0; border: 1px solid #15803d; }
-
-        /* ESTILO DO POP-UP CUSTOMIZADO */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 9999;
-        }
-        .modal-box {
-            background-color: #1e293b;
-            border: 2px solid #ef4444;
-            border-radius: 12px;
-            padding: 25px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            text-align: center;
-        }
-        .modal-box-sucesso {
-            border-color: #10b981;
-        }
-        .modal-titulo {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .modal-texto {
-            font-size: 14px;
-            color: #cbd5e1;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .btn-modal-fechar {
-            background-color: #475569;
-            color: white;
-            padding: 10px 25px;
-            font-weight: bold;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            display: inline-block;
-            width: auto;
-            margin: 0;
-        }
-        .btn-modal-fechar:hover {
-            background-color: #334155;
-        }
     </style>
 </head>
 <body>
 
-    <!-- POP-UP CUSTOMIZADO -->
-    <div id="popup-customizado" class="modal-overlay escondido">
-        <div id="modal-corpo" class="modal-box">
-            <div id="popup-titulo" class="modal-titulo" style="color: #ef4444;">⚠️ ALERTA CHECKMANT</div>
-            <div id="popup-mensagem" class="modal-texto">Mensagem do sistema.</div>
-            <button type="button" class="btn-modal-fechar" onclick="fecharPopupCustomizado()">OK</button>
-        </div>
-    </div>
-
-    <!-- LOGIN -->
     <div id="bloco-login">
         <div class="card-login">
             <h2>CHECKMANT</h2>
             <p>Insira suas credenciais operacionais</p>
-            <form id="form-login">
+            
+            <form id="form-login" onkeydown="if(event.key === 'Enter'){ autenticarUsuario(); }">
                 <div class="form-group">
                     <label>ID do Usuário / Login:</label>
-                    <input type="text" id="login-usuario" placeholder="Ex: op_1 ou manut_1" required autocomplete="off">
+                    <input type="text" id="login-usuario" placeholder="Ex: op_1 ou eng_1" required autocomplete="off">
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <label>Senha:</label>
+                    <label>Senha Numérica:</label>
                     <input type="password" id="login-senha" placeholder="••••" required>
                 </div>
-                <button type="button" id="btn-entrar-login" class="btn-azul">Entrar no Sistema</button>
+                
+                <button type="button" onclick="autenticarUsuario()" class="btn-azul">Entrar no Sistema</button>
             </form>
+            
+            <div style="border-top: 1px solid #475569; margin-top: 15px; padding-top: 15px; text-align: center;">
+                <span style="font-size: 11px; color: #94a3b8; display: block;">Operadores: senha 0000 | Engenharia: senha 1234</span>
+            </div>
         </div>
     </div>
 
-    <!-- PAINEL -->
-    <div id="bloco-sistema" class="container escondido">
+    <div id="bloco-operador" class="container escondido">
         <header>
             <div class="titulos">
-                <h1 id="titulo-painel-dinamico">CHECKMANT - Painel de Fábrica</h1>
-                <p>Usuário ativo: <span id="user-display" style="font-weight:bold;"></span></p>
+                <h1 class="titulo-checklist">CHECKMANT - Painel de Fábrica</h1>
+                <p>Usuário ativo: <span id="user-display" style="font-weight: bold;">op_1</span></p>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <a id="link-manual-pdf" href="https://drive.google.com/open?id=1gfqVzkarCs9OvyImF73ZhPwKrr8yqAOB" target="_blank" class="btn-manual" style="margin:0; padding:8px 15px; font-size:12px;">📕 Manual (PDF) ↗</a>
-                <button id="btn-logout" class="btn-cinza" style="width:auto; margin:0; padding:8px 15px;">Sair</button>
+            <div style="width: auto;">
+                <button onclick="fazerLogout()" class="btn-cinza" style="padding: 8px 15px; margin: 0; width: auto;">Sair / Logout</button>
             </div>
         </header>
 
         <div class="layout-abas">
-            <!-- MENU OPERADOR -->
             <ul class="menu-lista" id="menu-operador-abas">
-                <li id="aba-li-chk" class="menu-item ativo" onclick="alternarAba('chk')">📋 Checklist Diário</li>
-                <li id="aba-li-os" class="menu-item" onclick="alternarAba('os')">🛠️ Abrir O.S. de Defeito</li>
-                <li id="aba-li-hist" class="menu-item" onclick="alternarAba('hist')">🕒 Histórico Local</li>
+                <li class="menu-item ativo" id="item-op-chk" onclick="alternarAbaOperador('op-chk')">
+                    <span>📋 Checklist Diário</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-op-os" onclick="alternarAbaOperador('op-os')">
+                    <span>🛠️ Abrir O.S. de Defeito</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-op-hist" onclick="alternarAbaOperador('op-hist')">
+                    <span>🕒 Histórico Local</span> <span class="setinha">➔</span>
+                </li>
             </ul>
 
-            <!-- MENU MANUTENÇÃO -->
             <ul class="menu-lista escondido" id="menu-manutencao-abas">
-                <li id="aba-li-dashboard" class="menu-item ativo" onclick="alternarAba('dashboard')">📊 Indicadores / Painel</li>
-                <li id="aba-li-feed" class="menu-item" onclick="alternarAba('feed')">📥 Feed de Acompanhamento</li>
-                <li id="aba-li-backlog" class="menu-item" onclick="alternarAba('backlog')">🗂️ Backlog de O.S.</li>
-                <li id="aba-li-config" class="menu-item" onclick="alternarAba('config')">⚙️ Cadastros</li>
+                <li class="menu-item ativo" id="item-eng-dash" onclick="alternarAbaOperador('eng-dash')">
+                    <span>📊 Indicadores / Painel</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-eng-feed" onclick="alternarAbaOperador('eng-feed')">
+                    <span>📥 Feed de Acompanhamento</span> <span class="setinha">➔</span>
+                </li>
+                <li class="menu-item" id="item-eng-backlog" onclick="alternarAbaOperador('eng-backlog')">
+                    <span>🗂️ Backlog de O.S.</span> <span class="setinha">➔</span>
+                </li>
             </ul>
 
-            <!-- ABAS -->
             <div class="conteudo-aba">
                 
-                <div id="aba-chk" class="bloco secao-conteudo">
-                    <h2 class="titulo-operador">📋 Checklist Operacional Diário</h2>
-                    <div class="form-group">
-                        <label>MÁQUINA DIRECIONADA:</label>
-                        <select id="seletor-equipamento-op"></select>
+                <div id="aba-op-chk" class="bloco">
+                    <h2 class="titulo-checklist">📋 Checklist Operacional Diário</h2>
+                    <div class="form-group" style="margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 8px;">
+                        <label style="color: #34d399;">MÁQUINA DIRECIONADA:</label>
+                        <select id="operador-seletor-equipamento" style="border-color: #34d399; font-weight: bold; color: #34d399;">
+                        </select>
                     </div>
-                    <form id="form-checklist">
-                        <div class="area-rolavel-checklist" id="container-perguntas"></div>
-                        <button type="submit" class="btn-verde">Enviar monitoramento de condição básica</button>
+                    <form id="form-checklist" onsubmit="validarChecklist(event)">
+                        <div class="area-rolavel-checklist" id="container-perguntas-checklist"></div>
+                        <button type="submit" class="btn-verde">Enviar Checklist do Equipamento</button>
                     </form>
                 </div>
 
-                <div id="aba-os" class="bloco secao-conteudo escondido">
-                    <h2 style="color: #f59e0b;">🛠️ Abrir O.S. de Manutenção</h2>
-                    <form id="form-os">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="form-group">
-                                <label>Nome do Solicitante:</label>
-                                <input type="text" id="os-nome-op" placeholder="Seu nome" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Turno:</label>
-                                <select id="os-turno-op">
-                                    <option value="1º Turno">1º Turno</option>
-                                    <option value="2º Turno">2º Turno</option>
-                                    <option value="3º Turno">3º Turno</option>
-                                </select>
-                            </div>
+                <div id="aba-op-os" class="bloco escondido">
+                    <h2 class="titulo-os">🛠️ Abrir O.S. de Manutenção</h2>
+                    <form id="form-os" onsubmit="criarNovaOS(event)">
+                        <div class="form-group">
+                            <label>Nome do Solicitante:</label>
+                            <input type="text" id="os-solicitante" placeholder="Seu nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Turno:</label>
+                            <select id="os-turno" required>
+                                <option value="1º Turno">1º Turno</option>
+                                <option value="2º Turno">2º Turno</option>
+                                <option value="3º Turno">3º Turno</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Urgência:</label>
@@ -392,76 +372,36 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Defeito:</label>
-                            <textarea id="os-descricao" rows="4" placeholder="Descreva o problema..." required></textarea>
+                            <label>Descrição do Defeito:</label>
+                            <textarea id="os-descricao" rows="4" placeholder="Descreva o problema observado..." required></textarea>
                         </div>
                         <button type="submit" class="btn-laranja">Emitir O.S.</button>
                     </form>
                 </div>
 
-                <div id="aba-hist" class="bloco secao-conteudo escondido">
-                    <h2 style="color: #60a5fa;">🕒 Histórico de Registros Local</h2>
+                <div id="aba-op-hist" class="bloco escondido">
+                    <h2 class="titulo-status">🕒 Histórico de Registros Local</h2>
                     <div id="lista-historico-local"></div>
                 </div>
 
-                <div id="aba-dashboard" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📊 Indicadores</h2>
+                <div id="aba-eng-dash" class="bloco escondido">
+                    <h2 class="titulo-manutencao">📊 Painel de Indicadores Industriais</h2>
                     <div class="grid-indicadores">
                         <div class="card-indicador"><h3>Status</h3><p class="txt-verde" id="ind-status">OPERANDO</p></div>
                         <div class="card-indicador"><h3>OEE Real</h3><p class="txt-roxo" id="ind-oee">92%</p></div>
                         <div class="card-indicador"><h3>Checklists</h3><p class="txt-azul" id="ind-checklists">0</p></div>
-                        <div class="card-indicador"><h3>O.S.</h3><p class="txt-laranja" id="ind-os">0</p></div>
+                        <div class="card-indicador"><h3>O.S. Criadas</h3><p class="txt-laranja" id="ind-os">0</p></div>
                     </div>
                 </div>
 
-                <div id="aba-feed" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento (Checklists e O.S.)</h2>
+                <div id="aba-eng-feed" class="bloco escondido">
+                    <h2 class="titulo-manutencao">📥 Feed de Acompanhamento Real-Time</h2>
                     <div id="lista-feed-manutencao"></div>
                 </div>
 
-                <div id="aba-backlog" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">🗂️ Backlog Geral de O.S.</h2>
+                <div id="aba-eng-backlog" class="bloco escondido">
+                    <h2 class="titulo-manutencao">🗂️ Backlog Geral de Ordens de Serviço (O.S.)</h2>
                     <div id="lista-backlog-manutencao"></div>
-                </div>
-
-                <div id="aba-config" class="bloco secao-conteudo escondido">
-                    <h2 class="titulo-manutencao">⚙️ Painel de Cadastros e Configurações</h2>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 25px;">
-                        <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
-                            <label style="font-weight:bold; color:#38bdf8; display:block; margin-bottom:8px;">CADASTRAR NOVA MÁQUINA:</label>
-                            <input type="text" id="cfg-nova-maquina" placeholder="Ex: Esteira Injetora Secundária">
-                            <button type="button" onclick="adicionarNovaMaquina()" class="btn-azul" style="margin-top:10px; padding:10px;">Adicionar Equipamento</button>
-                        </div>
-                        
-                        <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
-                            <label style="font-weight:bold; color:#34d399; display:block; margin-bottom:8px;">INSERIR NOVA PERGUNTA NO CHECKLIST DIÁRIO:</label>
-                            <div class="form-group">
-                                <label>Texto da Pergunta:</label>
-                                <input type="text" id="cfg-nova-pergunta" placeholder="Ex: Nível de óleo do motor está correto?">
-                            </div>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                                <div class="form-group">
-                                    <label>Seção:</label>
-                                    <select id="cfg-secao-pergunta">
-                                        <option value="SEGURANÇA (NR-12)">SEGURANÇA (NR-12)</option>
-                                        <option value="ESTRUTURA E ALINHAMENTO">ESTRUTURA E ALINHAMENTO</option>
-                                        <option value="CORREIA (LONA)">CORREIA (LONA)</option>
-                                        <option value="ACIONAMENTO (MOTORREDUTOR)">ACIONAMENTO (MOTORREDUTOR)</option>
-                                        <option value="SISTEMA ELÉTRICO/CONTROLE">SISTEMA ELÉTRICO/CONTROLE</option>
-                                        <option value="LUBRIFICAÇÃO (AÇÃO)">LUBRIFICAÇÃO (AÇÃO)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Criticidade:</label>
-                                    <select id="cfg-critico-pergunta">
-                                        <option value="nao">Não Crítica</option>
-                                        <option value="sim">Sim (Obrigatório estar Conforme)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="button" onclick="adicionarNovaPergunta()" class="btn-verde" style="margin-top:10px; padding:10px;">Adicionar ao Checklist</button>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -470,119 +410,88 @@
 
     <script>
         let logsSessao = JSON.parse(localStorage.getItem('checkmant_logs')) || [];
-        let listaEquipamentos = JSON.parse(localStorage.getItem('checkmant_maquinas')) || ["Esteira Transportadora Tecfag RC1M/V90"];
+        let listaEquipamentos = ["Esteira Transportadora Tecfag RC1M/V90"];
         
         let perguntasPadrao = [
             { id: "p1_1", secao: "SEGURANÇA (NR-12)", texto: "Proteções e barreiras de segurança (guarda-corpo, telas) estão no lugar e em bom estado?", critico: false },
             { id: "p1_2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e dispositivos de parada estão acessíveis e funcionando?", critico: true },
-            { id: "p1_3", secao: "SEGURANÇA (NR-12)", texto: "Sinalização de segurança e advertência (riscos, EPIs) está visível e legível?", critico: false },
-            
-            { id: "p2_1", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura metálica (chassis) apresenta trincas, corrosão ou deformações?", critico: false },
-            { id: "p2_2", secao: "ESTRUTURA E ALINHAMENTO", texto: "Roletes/Roletes de carga e retorno giram livremente e não estão danificados?", critico: false },
-            { id: "p2_3", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estado e alinhamento do tambor de acionamento (cabeçote) e do tambor de retorno (cauda)?", critico: false },
-            { id: "p2_4", secao: "ESTRUTURA E ALINHAMENTO", texto: "Limpeza geral da estrutura (acúmulo de material)?", critico: false },
-            
-            { id: "p3_1", secao: "CORREIA (LONA)", texto: "Correia apresenta cortes, rasgos, furos ou desgaste excessivo?", critico: true },
-            { id: "p3_2", secao: "CORREIA (LONA)", texto: "Emendas da correia (se houver) estão íntegras e planas?", critico: true },
-            { id: "p3_3", secao: "CORREIA (LONA)", texto: "Correia está centralizada e não roça na estrutura? (Verificar tensionamento/alinhamento)", critico: true },
-            { id: "p3_4", secao: "CORREIA (LONA)", texto: "Limpadores de correia (raspadores) estão ajustados e eficientes?", critico: false },
-            
-            { id: "p4_1", secao: "ACIONAMENTO (MOTORREDUTOR)", texto: "Nível e condição do óleo/lubrificante no redutor (se aplicável)?", critico: false },
-            { id: "p4_2", secao: "ACIONAMENTO (MOTORREDUTOR)", texto: "Ausência de ruídos ou vibrações anormais no motor/redutor?", critico: true },
-            { id: "p4_3", secao: "ACIONAMENTO (MOTORREDUTOR)", texto: "Estado e tensionamento das correias de transmissão (se houver)?", critico: true },
-            { id: "p4_4", secao: "ACIONAMENTO (MOTORREDUTOR)", texto: "Temperaturas de operação do motor e redutor (medir se possível)?", critico: false },
-            
-            { id: "p5_1", secao: "SISTEMA ELÉTRICO/CONTROLE", texto: "Cabos e caixas de ligação estão íntegro (sem fios expostos ou danos)?", critico: false },
-            { id: "p5_2", secao: "SISTEMA ELÉTRICO/CONTROLE", texto: "Teste de funcionamento dos sensores de desalinhamento (se houver)?", critico: false },
-            { id: "p5_3", secao: "SISTEMA ELÉTRICO/CONTROLE", texto: "Teste de funcionamento do sensor de rotação/velocidade (se houver)?", critico: false },
-            
-            { id: "p6_1", secao: "LUBRIFICAÇÃO (AÇÃO)", texto: "Pontos de lubrificação dos mancais e rolamentos realizados (verificar lubrificante correto)?", critico: false },
-            { id: "p6_2", secao: "LUBRIFICAÇÃO (AÇÃO)", texto: "Pontos de lubrificação do sistema de tensionamento (parafusos/esticadores) realizados?", critico: false }
+            { id: "p2_1", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura metálica apresenta trincas ou deformações mecânicas?", critico: false },
+            { id: "p3_1", secao: "CORREIA (LONA)", texto: "Correia apresenta cortes, rasgos profundos ou furos iminentes?", critico: true },
+            { id: "p4_2", secao: "ACIONAMENTO (MOTORREDUTOR)", texto: "Ausência de ruídos ou vibrações dinâmicas anormais no motor/redutor?", critico: true }
         ];
-        
-        let perguntasOficiais = JSON.parse(localStorage.getItem('checkmant_perguntas')) || perguntasPadrao;
-        let usuarioAtivo = "";
-        let nivelAcesso = ""; 
 
-        /* FUNÇÕES DO POP-UP PERSONALIZADO */
-        function dispararPopupCustomizado(titulo, texto, tipo) {
-            const popup = document.getElementById('popup-customizado');
-            const box = document.getElementById('modal-corpo');
-            const elTitulo = document.getElementById('popup-titulo');
-            const elTexto = document.getElementById('popup-mensagem');
-
-            elTitulo.innerText = titulo;
-            elTexto.innerHTML = texto;
-
-            if (tipo === 'erro' || tipo === 'critico') {
-                box.className = "modal-box"; 
-                elTitulo.style.color = "#ef4444";
-            } else {
-                box.className = "modal-box modal-box-sucesso";
-                elTitulo.style.color = "#10b981";
-            }
-
-            popup.classList.remove('escondido');
+        function atualizarSeletores() {
+            const htmlOpcoes = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
+            document.getElementById('operador-seletor-equipamento').innerHTML = htmlOpcoes;
         }
 
-        function fecharPopupCustomizado() {
-            document.getElementById('popup-customizado').classList.add('escondido');
-        }
-
-        function atualizarSeletoresMaquinas() {
-            document.getElementById('seletor-equipamento-op').innerHTML = listaEquipamentos.map(m => `<option value="${m}">${m}</option>`).join('');
-        }
-
-        document.getElementById('btn-entrar-login').onclick = function() {
+        function autenticarUsuario() {
             const user = document.getElementById('login-usuario').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
-            
+
             if (senha !== "0000" && senha !== "1234") {
-                dispararPopupCustomizado("⚠️ ERRO DE ACESSO", "Senha digitada está incorreta.", "erro");
+                alert("Senha incorreta!");
                 return;
             }
 
-            if (user.startsWith('manut')) {
-                nivelAcesso = "manutencao";
+            document.getElementById('bloco-login').classList.add('escondido');
+            document.getElementById('bloco-operador').classList.remove('escondido');
+            document.getElementById('user-display').innerText = user.toUpperCase();
+
+            if (user.startsWith('eng') || user.startsWith('manut')) {
                 document.getElementById('menu-operador-abas').classList.add('escondido');
                 document.getElementById('menu-manutencao-abas').classList.remove('escondido');
-                alternarAba('dashboard');
+                alternarAbaOperador('eng-dash');
             } else {
-                nivelAcesso = "operador";
                 document.getElementById('menu-manutencao-abas').classList.add('escondido');
                 document.getElementById('menu-operador-abas').classList.remove('escondido');
-                alternarAba('chk');
+                alternarAbaOperador('op-chk');
             }
 
-            usuarioAtivo = user;
-            document.getElementById('user-display').innerText = user.toUpperCase();
-            document.getElementById('bloco-login').classList.add('escondido');
-            document.getElementById('bloco-sistema').classList.remove('escondido');
-            atualizarSeletoresMaquinas();
-            montarPerguntas();
-            atualizarVisualizacaoLogs();
-        };
+            atualizarSeletores();
+            montarChecklistNaTelaDoOperador();
+            atualizarPainelEHistoricos();
+        }
 
-        document.getElementById('btn-logout').onclick = function() {
-            document.getElementById('bloco-sistema').classList.add('escondido');
+        function fazerLogout() {
+            document.getElementById('bloco-operador').classList.add('escondido');
             document.getElementById('bloco-login').classList.remove('escondido');
-        };
+            document.getElementById('form-login').reset();
+        }
 
-        function montarPerguntas() {
-            perguntasOficiais = JSON.parse(localStorage.getItem('checkmant_perguntas')) || perguntasPadrao;
+        function alternarAbaOperador(abaId) {
+            // Oculta todos os blocos de abas
+            document.getElementById('aba-op-chk').classList.add('escondido');
+            document.getElementById('aba-op-os').classList.add('escondido');
+            document.getElementById('aba-op-hist').classList.add('escondido');
+            document.getElementById('aba-eng-dash').classList.add('escondido');
+            document.getElementById('aba-eng-feed').classList.add('escondido');
+            document.getElementById('aba-eng-backlog').classList.add('escondido');
+
+            // Tira a classe 'ativo' de todos os botões das listas
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('ativo'));
+
+            // Exibe a aba clicada e marca o menu correspondente como ativo
+            document.getElementById(`aba-${abaId}`).classList.remove('escondido');
             
+            let itemMenu = document.getElementById(`item-${abaId}`);
+            if (itemMenu) itemMenu.classList.add('ativo');
+        }
+
+        function montarChecklistNaTelaDoOperador() {
             let html = "";
             let secaoAtual = "";
-            perguntasOficiais.forEach(p => {
-                if(p.secao !== secaoAtual) {
+            
+            perguntasPadrao.forEach(p => {
+                if (p.secao !== secaoAtual) {
                     secaoAtual = p.secao;
                     html += `<div class="header-secao-checklist">${secaoAtual}</div>`;
                 }
                 html += `
-                    <div class="pergunta-card">
+                    <div class="pergunta-card ${p.critico ? 'critico' : ''}">
                         <div class="pergunta-texto">
-                            ${p.texto}
-                            ${p.critico ? '<span class="obs-obrigatorio">* OBRIGATÓRIO ESTAR CONFORME</span>' : ''}
+                            <strong>${p.texto}</strong>
+                            ${p.critico ? '<span class="obs-obrigatorio">* ITEM IMPEDITIVO / CRÍTICO</span>' : ''}
                         </div>
                         <div class="opcoes-radio">
                             <label><input type="radio" name="${p.id}" value="OK" required> OK</label>
@@ -591,201 +500,159 @@
                     </div>
                 `;
             });
-            document.getElementById('container-perguntas').innerHTML = html;
+            document.getElementById('container-perguntas-checklist').innerHTML = html;
         }
 
-        function alternarAba(abaId) {
-            document.querySelectorAll('.secao-conteudo').forEach(b => b.classList.add('escondido'));
-            document.querySelectorAll('.menu-item').forEach(li => li.classList.remove('ativo'));
+        function validarChecklist(event) {
+            event.preventDefault();
+            const maquina = document.getElementById('operador-seletor-equipamento').value;
+            const usuario = document.getElementById('user-display').innerText;
+            const timestamp = new Date().toLocaleString('pt-BR');
             
-            if(document.getElementById(`aba-${abaId}`)) document.getElementById(`aba-${abaId}`).classList.remove('escondido');
-            if(document.getElementById(`aba-li-${abaId}`)) document.getElementById(`aba-li-${abaId}`).classList.add('ativo');
-        }
+            let detalhes = [];
+            let bloqueiaEquipamento = false;
+            let falhasDetectadas = [];
 
-        document.getElementById('form-checklist').onsubmit = function(e) {
-            e.preventDefault();
-            let detalhesArray = [];
-            let itensComFalha = [];
-            let possuiNokCritico = false;
-            const maquinaSelecionada = document.getElementById('seletor-equipamento-op').value;
-            const timestampAtual = new Date().toLocaleString('pt-BR');
-
-            perguntasOficiais.forEach(p => {
+            perguntasPadrao.forEach(p => {
                 const elemento = document.querySelector(`input[name="${p.id}"]:checked`);
-                const resp = elemento ? elemento.value : "N/A";
-                detalhesArray.push(`${p.texto} (${resp})`);
+                const resposta = elemento ? elemento.value : "N/A";
+                detalhes.push(`${p.texto} [${resposta}]`);
 
-                if(resp === 'NOK' && p.critico) {
-                    possuiNokCritico = true;
-                    itensComFalha.push(p.texto);
+                if (resposta === 'NOK' && p.critico) {
+                    bloqueiaEquipamento = true;
+                    falhasDetectadas.push(p.texto);
                 }
             });
 
             logsSessao.push({
-                data: timestampAtual,
-                usuario: usuarioAtivo,
-                equipamento: maquinaSelecionada,
+                data: timestamp,
+                usuario: usuario,
+                equipamento: maquina,
                 tipo: "CHECKLIST",
-                detalhes: detalhesArray.join(' | '),
-                bloqueado: possuiNokCritico
+                detalhes: detalhes.join(' | '),
+                bloqueado: bloqueiaEquipamento
             });
 
-            if(possuiNokCritico) {
-                dispararPopupCustomizado(
-                    "⚠️ ALERTA CHECKMANT", 
-                    "<strong>ATENÇÃO: A MÁQUINA NÃO PODE RODAR ANTES QUE A MANUTENÇÃO ATUE!</strong><br><br>O monitoramento detectou não conformidades nos itens obrigatórios.", 
-                    "critico"
-                );
+            if (bloqueiaEquipamento) {
+                alert("⚠️ ATENÇÃO: Máquina Bloqueada! Item obrigatório em desconformidade. O OEE foi zerado.");
                 
+                // Dispara a O.S automática de emergência crítica
                 logsSessao.push({
-                    data: timestampAtual,
+                    data: timestamp,
                     usuario: "SISTEMA (AUTO)",
-                    equipamento: maquinaSelecionada,
+                    equipamento: maquina,
                     tipo: "ORDEM DE SERVIÇO",
-                    detalhes: `CRITICIDADE: ALTA | Solicitante: Sistema Checkmant | Falha crítica detectada via Checklist nos itens obrigatórios: [${itensComFalha.join('; ')}]`
+                    detalhes: `CRITICIDADE: ALTA | Falha impeditiva detectada no Checklist: [${falhasDetectadas.join('; ')}]`
                 });
             } else {
-                dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Monitoramento de condição básica enviado com sucesso!", "sucesso");
+                alert("Checklist enviado com sucesso! Equipamento liberado.");
             }
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
             document.getElementById('form-checklist').reset();
-            atualizarVisualizacaoLogs();
-            alternarAba('hist');
-        };
+            atualizarPainelEHistoricos();
+            alternarAbaOperador('op-hist');
+        }
 
-        document.getElementById('form-os').onsubmit = function(e) {
-            e.preventDefault();
+        function criarNovaOS(event) {
+            event.preventDefault();
+            const maquina = document.getElementById('operador-seletor-equipamento').value;
+            const usuario = document.getElementById('user-display').innerText;
+            const solicitante = document.getElementById('os-solicitante').value;
+            const turno = document.getElementById('os-turno').value;
             const criticidade = document.getElementById('os-criticidade').value;
-            const desc = document.getElementById('os-descricao').value;
-            const solicitante = document.getElementById('os-nome-op').value;
-            const turno = document.getElementById('os-turno-op').value;
+            const descricao = document.getElementById('os-descricao').value;
+            const timestamp = new Date().toLocaleString('pt-BR');
 
             logsSessao.push({
-                data: new Date().toLocaleString('pt-BR'),
-                usuario: usuarioAtivo,
-                equipamento: document.getElementById('seletor-equipamento-op').value,
+                data: timestamp,
+                usuario: usuario,
+                equipamento: maquina,
                 tipo: "ORDEM DE SERVIÇO",
-                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${solicitante} (${turno}) | Defeito: ${desc}`
+                detalhes: `CRITICIDADE: ${criticidade.toUpperCase()} | Solicitante: ${solicitante} (${turno}) | Defeito: ${descricao}`
             });
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
-            dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Ordem de Serviço (O.S.) emitida com sucesso!", "sucesso");
+            alert("Ordem de Serviço gerada com sucesso e enviada ao Backlog!");
             document.getElementById('form-os').reset();
-            atualizarVisualizacaoLogs();
-            alternarAba('hist');
-        };
+            atualizarPainelEHistoricos();
+            alternarAbaOperador('op-hist');
+        }
 
-        function atualizarVisualizacaoLogs() {
+        function atualizarPainelEHistoricos() {
             logsSessao = JSON.parse(localStorage.getItem('checkmant_logs')) || [];
-            
+
             const totalChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST").length;
             const totalOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO").length;
+            
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
-            // LOGICA CORRIGIDA: Varre a lista de checklists de trás para frente para achar o estado real da máquina
-            const checklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
-            const maquinaBloqueada Atualmente = checklists.length > 0 && checklists[checklists.length - 1].bloqueado;
+            // ANALISE DO ESTADO REAL DA MÁQUINA ATRAVÉS DO ÚLTIMO CHECKLIST ENVIADO
+            const checklistsEnviados = logsSessao.filter(l => l.tipo === "CHECKLIST");
+            const estaBloqueadaPorChecklist = checklistsEnviados.length > 0 && checklistsEnviados[checklistsEnviados.length - 1].bloqueado;
 
-            if(maquinaBloqueadaAtualmente) {
+            if (estaBloqueadaPorChecklist) {
                 document.getElementById('ind-status').innerText = "BLOQUEADA";
-                document.getElementById('ind-status').className = "txt-laranja"; 
-                
-                // Se a máquina está de fato bloqueada pelo checklist impeditivo -> OEE VAI A ZERO!
+                document.getElementById('ind-status').className = "txt-laranja";
                 document.getElementById('ind-oee').innerText = "0%";
                 document.getElementById('ind-oee').className = "txt-laranja";
             } else {
                 document.getElementById('ind-status').innerText = "OPERANDO";
                 document.getElementById('ind-status').className = "txt-verde";
-                
-                // Se não houver bloqueio por checklist crítico, ela opera normalmente (independente de OS manuais baixa/media)
                 document.getElementById('ind-oee').innerText = "92%";
                 document.getElementById('ind-oee').className = "txt-roxo";
             }
 
+            // RENDERIZAÇÃO DO HISTÓRICO LOCAL OPERADOR
             document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
                 <div class="os-status-item" style="${log.bloqueado ? 'border-left: 4px solid #ef4444;' : ''}">
-                    <strong>${log.data} - ${log.tipo} ${log.bloqueado ? '<span style="color:#ef4444;">(MÁQ. BLOQUEADA)</span>' : ''}</strong><br>${log.detalhes}
+                    <strong>${log.data} - ${log.tipo} ${log.bloqueado ? '<span style="color:#ef4444;">(BLOQUEIO ATIVO)</span>' : ''}</strong><br>${log.detalhes}
                 </div>
             `).join('');
 
+            // RENDERIZAÇÃO DO FEED COMPLETO DA MANUTENÇÃO
             document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => {
                 if (log.tipo === "CHECKLIST") {
-                    const respostasFormatadas = log.detalhes.split(' | ').join('<br>• ');
                     return `
-                        <div class="os-status-item" style="border-left: 4px solid ${log.bloqueado ? '#ef4444' : '#34d399'};">
-                            <strong style="color:${log.bloqueado ? '#ef4444' : '#34d399'};">📋 ${log.data} - MONITORAMENTO DE CONDIÇÃO BÁSICA</strong> (${log.equipamento})<br>
-                            <span style="font-size:11px; color:#94a3b8;">Operador responsável: ${log.usuario.toUpperCase()}</span>
-                            <div class="badge-resposta">• ${respostasFormatadas}</div>
+                        <div class="os-status-item" style="border-left: 4px solid ${log.bloqueado ? '#ef4444' : '#10b981'};">
+                            <strong style="color:${log.bloqueado ? '#ef4444' : '#10b981'};">📋 ${log.data} - CHECKLIST OPERACIONAL</strong> (${log.equipamento})<br>
+                            <span style="font-size:11px; color:#94a3b8;">Verificado por: ${log.usuario}</span><br>
+                            <span style="color: #cbd5e1;">${log.detalhes}</span>
                         </div>
                     `;
                 } else {
-                    const ehAutomática = log.usuario === "SISTEMA (AUTO)";
+                    const auto = log.usuario === "SISTEMA (AUTO)";
                     return `
-                        <div class="os-status-item" style="border-left: 4px solid #f59e0b; ${ehAutomática ? 'background-color: #2d1616; border-color: #ef4444;' : ''}">
-                            <strong style="color:${ehAutomática ? '#ef4444' : '#f59e0b'};">🛠️ ${log.data} - ABERTA O.S. ${ehAutomática ? 'AUTOMÁTICA CRÍTICA' : ''}</strong> (${log.equipamento})<br>
+                        <div class="os-status-item" style="border-left: 4px solid #f59e0b; ${auto ? 'background-color: #2d1616; border-color: #ef4444;' : ''}">
+                            <strong style="color: ${auto ? '#ef4444' : '#f59e0b'};">🛠️ ${log.data} - O.S. ABERTA ${auto ? 'AUTOMATICAMENTE' : ''}</strong> (${log.equipamento})<br>
                             <span>${log.detalhes}</span>
                         </div>
                     `;
                 }
             }).join('');
 
-            const apenasOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
-            if(apenasOS.length === 0) {
-                document.getElementById('lista-backlog-manutencao').innerHTML = "<p style='color:#94a3b8; font-size:13px;'>Nenhuma O.S. pendente no momento.</p>";
+            // RENDERIZAÇÃO DO BACKLOG DE O.S.
+            const listaOS = logsSessao.filter(l => l.tipo === "ORDEM DE SERVIÇO");
+            if (listaOS.length === 0) {
+                document.getElementById('lista-backlog-manutencao').innerHTML = "<p style='color:#94a3b8; font-size:13px;'>Nenhuma ordem de serviço ativa no backlog.</p>";
             } else {
-                document.getElementById('lista-backlog-manutencao').innerHTML = apenasOS.map(log => {
-                    let criticidadeTag = "tag-baixa";
-                    let critTxt = "baixa";
-                    const txtMaiusculo = log.detalhes ? log.detalhes.toUpperCase() : "";
-                    
-                    if(txtMaiusculo.includes("ALTA")) { criticidadeTag = "tag-alta"; critTxt = "alta / crítica"; }
-                    else if(txtMaiusculo.includes("MEDIA") || txtMaiusculo.includes("MÉDIA")) { criticidadeTag = "tag-media"; critTxt = "média"; }
-                    
+                document.getElementById('lista-backlog-manutencao').innerHTML = listaOS.map(log => {
+                    let badgeClass = "tag-baixa";
+                    let critText = "baixa";
+                    const upText = log.detalhes.toUpperCase();
+
+                    if (upText.includes("ALTA")) { badgeClass = "tag-alta"; critText = "alta / crítica"; }
+                    else if (upText.includes("MEDIA") || upText.includes("MÉDIA")) { badgeClass = "tag-media"; critText = "média"; }
+
                     return `
-                        <div class="os-status-item" style="padding-right: 80px;">
-                            <span class="tag-critica ${criticidadeTag}">${critTxt}</span>
-                            <strong>${log.data} - ${log.equipamento}</strong><br>${log.detalhes}
+                        <div class="os-status-item" style="padding-right: 90px;">
+                            <span class="tag-critica ${badgeClass}">${critText}</span>
+                            <strong>${log.data} - ${log.equipamento}</strong><br>
+                            <span>${log.detalhes}</span>
                         </div>
                     `;
                 }).join('');
-            }
-        }
-
-        function adicionarNovaMaquina() {
-            const nome = document.getElementById('cfg-nova-maquina').value.trim();
-            if(nome) { 
-                listaEquipamentos.push(nome); 
-                localStorage.setItem('checkmant_maquinas', JSON.stringify(listaEquipamentos));
-                atualizarSeletoresMaquinas(); 
-                document.getElementById('cfg-nova-maquina').value = "";
-                dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Equipamento cadastrado com sucesso!", "sucesso");
-            }
-        }
-
-        function adicionarNovaPergunta() {
-            const texto = document.getElementById('cfg-nova-pergunta').value.trim();
-            const secao = document.getElementById('cfg-secao-pergunta').value;
-            const eCritico = document.getElementById('cfg-critico-pergunta').value === "sim";
-            
-            if(texto) {
-                perguntasOficiais = JSON.parse(localStorage.getItem('checkmant_perguntas')) || perguntasPadrao;
-                
-                const novoId = "p_" + Date.now();
-                perguntasOficiais.push({
-                    id: novoId,
-                    secao: secao,
-                    texto: texto,
-                    critico: eCritico
-                });
-                
-                localStorage.setItem('checkmant_perguntas', JSON.stringify(perguntasOficiais));
-                montarPerguntas();
-                document.getElementById('cfg-nova-pergunta').value = "";
-                dispararPopupCustomizado("✅ SUCESSO CHECKMANT", "Nova pergunta inserida e salva com sucesso!", "sucesso");
-            } else {
-                dispararPopupCustomizado("⚠️ ERRO CONFIG", "Por favor, digite o texto da pergunta.", "erro");
             }
         }
     </script>
