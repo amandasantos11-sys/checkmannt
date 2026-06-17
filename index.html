@@ -126,7 +126,7 @@
             font-size: 20px;
         }
 
-        /* BARRA DE ROLAGEM OTIMIZADA E FORÇADA */
+        /* BARRA DE ROLAGEM FORÇADA */
         .area-rolavel-checklist {
             max-height: 52vh;
             overflow-y: scroll !important;
@@ -227,7 +227,7 @@
         }
         
         /* Botões Estilizados */
-        button, .btn-link-formatado {
+        button {
             width: 100%;
             padding: 12px;
             font-weight: bold;
@@ -239,10 +239,8 @@
             display: block;
             box-sizing: border-box;
             text-align: center;
-            text-decoration: none;
         }
         .btn-azul { background-color: #2563eb; color: white; }
-        .btn-roxo { background-color: #7c3aed; color: white; }
         .btn-verde { background-color: #059669; color: white; }
         .btn-laranja { background-color: #d97706; color: white; }
         .btn-cinza { background-color: #475569; color: white; }
@@ -250,7 +248,7 @@
         /* Ocultor de telas */
         .escondido { display: none !important; }
 
-        /* ESTRUTURA DO KANBAN DINÂMICO */
+        /* KANBAN DINÂMICO */
         .kanban-board {
             display: grid;
             grid-template-columns: 1fr;
@@ -286,7 +284,6 @@
             border-radius: 20px;
         }
         
-        /* Card de Tarefa Kanban */
         .kanban-card {
             background-color: #1e293b;
             border: 1px solid #475569;
@@ -294,17 +291,10 @@
             padding: 12px;
             margin-bottom: 10px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-            position: relative;
         }
         .kanban-card-alta {
             border-left: 4px solid #ef4444 !important;
             background: linear-gradient(90deg, #2c1a1a 0%, #1e293b 100%);
-            animation: pulse-border 2s infinite;
-        }
-        @keyframes pulse-border {
-            0% { border-color: #ef4444; }
-            50% { border-color: #7f1d1d; }
-            100% { border-color: #ef4444; }
         }
         .kanban-card h4 { margin: 0 0 6px 0; font-size: 13px; color: #f8fafc; display: flex; justify-content: space-between; }
         .kanban-card p { margin: 0 0 10px 0; font-size: 12px; color: #cbd5e1; white-space: pre-line; }
@@ -327,10 +317,7 @@
             flex: 1;
         }
 
-        /* Badges e Outros Elementos */
-        .badge-ok { background-color: #065f46; color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
-        .badge-nok { background-color: #7f1d1d; color: #f87171; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;}
-        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; position: relative;}
+        .os-status-item { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 10px; }
 
         .grid-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .card-indicador { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; text-align: center; }
@@ -341,11 +328,6 @@
         .txt-laranja { color: #ef4444; }
         .txt-azul { color: #3b82f6; }
         .txt-roxo { color: #a855f7; }
-
-        .tag-critica { position: absolute; top: 12px; right: 12px; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .tag-alta { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #b91c1c; }
-        .tag-media { background-color: #78350f; color: #fde68a; border: 1px solid #b45309; }
-        .tag-baixa { background-color: #14532d; color: #a7f3d0; border: 1px solid #15803d; }
     </style>
 </head>
 <body>
@@ -377,8 +359,8 @@
     <div id="bloco-operador" class="container escondido">
         <header>
             <div class="titulos">
-                <h1 class="titulo-checklist">CHECKMANT - Sistema Integrado (<span id="user-display">op_1</span>)</h1>
-                <p>Navegue pelas rotinas operacionais e de engenharia:</p>
+                <h1 class="titulo-checklist">CHECKMANT - Sistema Industrial</h1>
+                <p>Usuário Ativo: <span id="user-display">op_1</span></p>
             </div>
             <div style="width: auto;">
                 <button onclick="fazerLogout()" class="btn-cinza" style="padding: 8px 15px; margin: 0; width: auto;">Sair / Logout</button>
@@ -414,13 +396,11 @@
                 
                 <div id="aba-op-chk" class="bloco">
                     <h2 class="titulo-checklist">📋 Checklist Operacional Diário</h2>
-                    
                     <div class="form-group" style="margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 8px;">
                         <label style="color: #34d399;">MÁQUINA DIRECIONADA:</label>
-                        <select id="operador-seletor-equipamento" onchange="montarChecklistNaTelaDoOperador()" style="border-color: #34d399; font-weight: bold; color: #34d399;">
+                        <select id="operador-seletor-equipamento" style="border-color: #34d399; font-weight: bold; color: #34d399;">
                         </select>
                     </div>
-
                     <form id="form-checklist" onsubmit="validarChecklist(event)">
                         <div class="area-rolavel-checklist" id="container-perguntas-checklist"></div>
                         <button type="submit" class="btn-verde">Enviar Checklist do Equipamento</button>
@@ -444,7 +424,7 @@
                         </div>
                         <div class="form-group">
                             <label>ÁREA / SETOR INDUSTRIAL:</label>
-                            <input type="text" id="os-area" placeholder="Ex: Setor de Triagem, Linha de Ensaque..." required>
+                            <input type="text" id="os-area" placeholder="Ex: Setor de Triagem, Linha 02..." required>
                         </div>
                         <div class="form-group">
                             <label>RESPONSÁVEL OPERACIONAL / SOLICITANTE:</label>
@@ -460,7 +440,7 @@
                         </div>
                         <div class="form-group">
                             <label>DESCRIÇÃO DETALHADA DO DEFEITO:</label>
-                            <textarea id="os-descricao" rows="4" placeholder="Descreva os sintomas, ruídos ou anomalias observadas..." required></textarea>
+                            <textarea id="os-descricao" rows="4" placeholder="Descreva os sintomas observados..." required></textarea>
                         </div>
                         <button type="submit" class="btn-laranja">Emitir e Registrar O.S.</button>
                     </form>
@@ -509,8 +489,8 @@
     </div>
 
     <script>
-        // BANCO DE DADOS E CONFIGURAÇÕES ORIGINAIS PRESERVADOS
         let logsSessao = JSON.parse(localStorage.getItem('checkmant_logs')) || [];
+        
         let listaEquipamentos = [
             "Esteira Transportadora Tecfag RC1M/V90",
             "Seladora Automática Continuous Band Sealer",
@@ -519,7 +499,7 @@
         
         let perguntasBancoGlobal = [
             { id: "p1", secao: "SEGURANÇA (NR-12)", texto: "Proteções e barreiras mecânicas de segurança estão no lugar e fixadas?", critico: false },
-            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e chaves de segurança respondem perfeitamente ao teste?", critico: true },
+            { id: "p2", secao: "SEGURANÇA (NR-12)", texto: "Botões de emergência e chaves de segurança respondem ao teste?", critico: true },
             { id: "p3", secao: "ESTRUTURA E ALINHAMENTO", texto: "Estrutura do chassi apresenta ausência de trincas mecânicas ou fadiga?", critico: false },
             { id: "p4", secao: "CORREIA / COMPONENTES", texto: "Lona/Correia opera livre de cortes severos ou rasgos iminentes?", critico: true },
             { id: "p5", secao: "ACIONAMENTO", texto: "Motor e redutor operam em temperatura normal e livres de ruídos anormais?", critico: true },
@@ -537,7 +517,7 @@
             const senha = document.getElementById('login-senha').value;
 
             if (senha !== "0000" && senha !== "1234") {
-                alert("Senha incorreta operacional!");
+                alert("Senha incorreta!");
                 return;
             }
 
@@ -560,13 +540,6 @@
             atualizarPainelEHistoricos();
         }
 
-        function做Logout() {
-            fazerLogout();
-        }
-
-        function做Logout() {
-            // alias fix
-        }
         function fazerLogout() {
             document.getElementById('bloco-operador').classList.add('escondido');
             document.getElementById('bloco-login').classList.remove('escondido');
@@ -641,13 +614,11 @@
                 equipamento: maquina,
                 tipo: "CHECKLIST",
                 detalhes: detalhes.join(' | '),
-                bloqueado: bloqueiaEquipamento,
-                statusKanban: bloqueiaEquipamento ? "Pendente" : "N/A",
-                criticidade: bloqueiaEquipamento ? "alta" : "baixa"
+                bloqueado: bloqueiaEquipamento
             });
 
             if (bloqueiaEquipamento) {
-                alert("⚠️ CONDICIONAL IMPEDITIVA DETECTADA! O equipamento foi classificado como BLOQUEADO e o indicador OEE zerou.");
+                alert("⚠️ CONDICIONAL IMPEDITIVA! Equipamento classificado como BLOQUEADO. OEE zerado.");
                 
                 logsSessao.push({
                     id: "OS-AUTO-" + Date.now(),
@@ -655,14 +626,14 @@
                     usuario: "SISTEMA (AUTO)",
                     equipamento: maquina,
                     tipo: "ORDEM DE SERVIÇO",
-                    detalhes: `CRITICIDADE: CRÍTICA/ALTA | Falha grave detectada em itens de checklist impeditivos: [${falhasDetectadas.join('; ')}]`,
+                    detalhes: `CRITICIDADE: ALTA | Falha em itens críticos: [${falhasDetectadas.join('; ')}]`,
                     statusKanban: "Pendente",
                     criticidade: "alta",
-                    area: "Não especificada (Checklist)",
-                    solicitante: "Robô Checkmant"
+                    area: "Área Industrial (Checklist)",
+                    solicitante: "Sistema Checkmant"
                 });
             } else {
-                alert("Monitoramento concluído! Equipamento liberado para operação regular.");
+                alert("Checklist processado! Equipamento em operação.");
             }
 
             localStorage.setItem('checkmant_logs', JSON.stringify(logsSessao));
@@ -722,7 +693,6 @@
             document.getElementById('ind-checklists').innerText = totalChecklists;
             document.getElementById('ind-os').innerText = totalOS;
 
-            // ANÁLISE CIRÚRGICA: OEE só zera se o último checklist disser que há BLOQUEIO impeditivo ativo
             const todosOsChecklists = logsSessao.filter(l => l.tipo === "CHECKLIST");
             const ultimaCondicaoBloqueada = todosOsChecklists.length > 0 && todosOsChecklists[todosOsChecklists.length - 1].bloqueado;
 
@@ -738,28 +708,25 @@
                 document.getElementById('ind-oee').className = "txt-roxo";
             }
 
-            // RENDERS DE HISTÓRICO LOCAL E FEED
             document.getElementById('lista-historico-local').innerHTML = logsSessao.map(log => `
-                <div class="os-status-item" style="${log.bloqueado ? 'border-left: 4px solid #ef4444;' : 'border-left: 4px solid #475569;'}">
-                    <strong>${log.data} - ${log.tipo} ${log.bloqueado ? '<span style="color:#ef4444;">(BLOQUEADO POR CHECKLIST)</span>' : ''}</strong><br>
+                <div class="os-status-item">
+                    <strong>${log.data} - ${log.tipo}</strong><br>
                     <span style="font-size: 11px; color:#94a3b8;">Equipamento: ${log.equipamento} ${log.area ? `| Setor: ${log.area}` : ''}</span><br>
                     <span>${log.detalhes}</span>
                 </div>
             `).join('');
 
             document.getElementById('lista-feed-manutencao').innerHTML = logsSessao.map(log => `
-                <div class="os-status-item" style="border-left: 4px solid ${log.tipo === 'CHECKLIST' ? (log.bloqueado ? '#ef4444' : '#10b981') : '#f59e0b'};">
-                    <strong>${log.tipo === 'CHECKLIST' ? '📋 CHECKLIST COLETADO' : '🛠️ ORDEM DE SERVIÇO EMITIDA'}</strong> (${log.equipamento})<br>
+                <div class="os-status-item">
+                    <strong>${log.tipo === 'CHECKLIST' ? '📋 CHECKLIST COLETADO' : '🛠️ ORDEM DE SERVIÇO'}</strong> (${log.equipamento})<br>
                     <span style="font-size:11px; color:#94a3b8;">Data: ${log.data} | Usuário: ${log.usuario}</span><br>
                     <p style="margin: 5px 0 0 0; color:#cbd5e1;">${log.detalhes}</p>
                 </div>
             `).join('');
 
-            // FLUXO DO KANBAN DINÂMICO
             let colPendente = "";
             let colExecucao = "";
             let colConcluido = "";
-            
             let cPend = 0, cExec = 0, cConc = 0;
 
             logsSessao.forEach(log => {
@@ -771,37 +738,9 @@
                         <div class="${cardClass}">
                             <h4><span>${log.equipamento}</span> <span style="font-size:10px;">${badgeCriticidade}</span></h4>
                             <p>${log.detalhes}</p>
-                            <span class="kanban-meta">Solicitante: ${log.solicitante || 'Não inf.'} | Setor: ${log.area || 'Geral'}</span>
+                            <span class="kanban-meta">Solicitante: ${log.solicitante || 'Op'} | Setor: ${log.area || 'Geral'}</span>
                             <div class="kanban-acoes">
                     `;
 
                     if (log.statusKanban === "Pendente") {
                         cPend++;
-                        htmlCard += `<button class="btn-kanban-acao btn-azul" onclick="moverKanban('${log.id}', 'Em Execução')">Atender ➔</button>`;
-                        htmlCard += `</div></div>`;
-                        colPendente += htmlCard;
-                    } else if (log.statusKanban === "Em Execução") {
-                        cExec++;
-                        htmlCard += `<button class="btn-kanban-acao btn-verde" onclick="moverKanban('${log.id}', 'Concluído')">Concluir ✓</button>`;
-                        htmlCard += `</div></div>`;
-                        colExecucao += htmlCard;
-                    } else if (log.statusKanban === "Concluído") {
-                        cConc++;
-                        htmlCard += `<span style="color:#10b981; font-size:11px; font-weight:bold;">✓ Finalizada</span>`;
-                        htmlCard += `</div></div>`;
-                        colConcluido += htmlCard;
-                    }
-                }
-            });
-
-            document.getElementById('coluna-pendente').innerHTML = colPendente || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
-            document.getElementById('coluna-execucao').innerHTML = colExecucao || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
-            document.getElementById('coluna-concluido').innerHTML = colConcluido || "<p style='color:#475569; font-size:12px; text-align:center;'>Vazio</p>";
-
-            document.getElementById('count-pendente').innerText = cPend;
-            document.getElementById('count-execucao').innerText = cExec;
-            document.getElementById('count-concluido').innerText = cConc;
-        }
-    </script>
-</body>
-</html>
